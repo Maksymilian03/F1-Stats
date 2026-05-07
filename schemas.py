@@ -7,3 +7,15 @@ class Driver(BaseModel):
     driver_number: int
     country_code: Optional[str] = None
     headshot_url: Optional[str] = None
+
+
+class RaceResult(BaseModel):
+    position: Optional[int] = None
+    full_name: str
+    driver_number: Optional[int] = None
+    gap_to_leader: Optional[float] = None
+    dnf: Optional[bool] = None
+    dns: Optional[bool] = None
+    dsq: Optional[bool] = None
+   
+
