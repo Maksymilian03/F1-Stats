@@ -13,8 +13,11 @@ def root():
 
 @app.get('/drivers/', response_model=list[Driver])
 async def get_drivers():
-    url = 'https://api.openf1.org/v1/drivers'
+    url = 'https://api.openf1.org/v1/drivers?session_key=latest'
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
-    return response.json()
+    
+    list_of_drivers = {driver['driver_number']: driver for driver in response.json()} 
+    return (list(list_of_drivers.values()))
+    
     
