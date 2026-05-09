@@ -46,21 +46,27 @@ async def get_races_and_sprints(year: int) ->tuple[list[int], list[int]]:
     sprint_url = f'https://api.openf1.org/v1/sessions?year={year}&session_name=Sprint'
     try:
         async with httpx.AsyncClient() as client:
-            race_response, sprint_response= await asyncio.gather(client.get(race_url), client.get(sprint_url))
+            race_response, sprint_response = await asyncio.gather(client.get(race_url), client.get(sprint_url))
             race_response.raise_for_status()
             sprint_response.raise_for_status()
-            if isinstance(race_response.json(), dict) and 'detail' in race_response.json():
+
+            race_data = race_response.json()
+            sprint_data = sprint_response.json()    
+
+            if isinstance(race_data, dict) and 'detail' in race_data:
                 raise HTTPException(status_code=404, detail='Nie znaleziono wyscigów')
-            if isinstance(sprint_response.json(), dict) and 'detail' in sprint_response.json():
+            if isinstance(sprint_data, dict) and 'detail' in sprint_data:
                 raise HTTPException(status_code=404, detail='Nie znaleziono sprintów')
-            race_keys = [session['session_key'] for session in race_response.json()]
-            sprint_keys = [session['session_key'] for session in sprint_response.json()]
+            
+            race_keys = [session['session_key'] for session in  race_data]
+            sprint_keys = [session['session_key'] for session in sprint_data]
+
+            return race_keys, sprint_keys
+        
     except httpx.HTTPStatusError as e:
-        raise (HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}'))
+        raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
     except httpx.RequestError as e:
-        raise (HTTPException(status_code=503, detail=f'Błąd połączenia: {e}'))
-    else:
-        return race_keys, sprint_keys
+        raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
 
 
 
@@ -76,23 +82,34 @@ async def fetch_session_results(session_key: int) -> list[dict]:
             data = response.json()
             if isinstance(data, dict) and 'detail' in data:
                 raise HTTPException(status_code=404, detail='Nie znaleziono sesji')
-        
+            return data
+    
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
     except httpx.RequestError as e:
         raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
-    else:
-        return data
-    
+
+
     
 
-def calculate_points(all_session_results: list[list[dict]], points_table: dict[int, int]) -> dict[int, dict]:
+def calculate_points(all_session_results: list[list[dict]], points_table: dict[int, int], count_wins: bool = True) -> dict[int, dict]:
     """
     Funkcja zliczy ilość punktów dla kierowcy
     i ilosc zwyciest w wyscigach i zwroci to w postaci:
     {44: {'points': 222, 'wins': 2}}, {55: {'points': 45, 'wins': 1}
     """
-    pass
+    result = {}
+    for session_result in all_session_results:
+        for driver_result in session_result:
+            driver_number, position = driver_result['driver_number'], driver_result['position']
+            if driver_number not in result:
+                result[driver_number] = {'points': 0, 'wins': 0}
+            
+            result[driver_number]['points'] += points_table.get(position, 0)
+            if count_wins and position == 1:
+                result[driver_number]['wins'] += 1
+    return result
+
 
 def merge_driver_details(list_of_drivers: dict[int, dict], standings_data: dict) -> dict:
     """
