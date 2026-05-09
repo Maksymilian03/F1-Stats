@@ -1,7 +1,7 @@
-from fastapi import FastAPI, HTTPException
-from schemas import Driver, RaceResult
+from fastapi import FastAPI, HTTPException, Path
+from schemas import Driver, RaceResult, StandingsEntry
 import httpx
-from services import fetch_drivers
+from services import fetch_drivers, get_standings
 
 
 
@@ -25,19 +25,29 @@ async def get_race_results(year: int, country: str):
     
     async with httpx.AsyncClient() as client:
         response = await client.get(url_session)
-        print(response.json())
-        if 'detail' in response.json():
+        data = response.json()
+        if 'detail' in data and data['detail'] == 'Not found.':
             raise HTTPException(status_code=404, detail='Nie znaleziono wyścigu')
-        session_key = response.json()[0]['session_key']
+        session_key = data[0]['session_key']
         list_of_drivers = await fetch_drivers(session_key)
         url_results = f'https://api.openf1.org/v1/session_result?session_key={session_key}'
         response2 = await client.get(url_results)
+        data2 = response2.json()
         final_list = []
-        for result in response2.json():
+        for result in data2:
            result['full_name'] = list_of_drivers[result['driver_number']]['full_name']
            final_list.append(result)
 
         return final_list
+    
+@app.get('/standings/{year}/', response_model=list[StandingsEntry])
+async def standings_endpoint(
+    year: int = Path(
+        ..., ge=2023, le=2025,
+        description="Rok musi być pomiędzy 2023 a 2025"
+        )
+    ):
+    return await get_standings(year)
 
     
 

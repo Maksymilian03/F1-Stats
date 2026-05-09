@@ -19,3 +19,12 @@ class RaceResult(BaseModel):
     dsq: Optional[bool] = None
    
 
+class StandingsEntry(BaseModel):
+    position: int
+    full_name: str
+    team_name: Optional[str] = None
+    points: int
+    wins: int
+    driver_number: int
+
+
