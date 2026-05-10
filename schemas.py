@@ -22,7 +22,7 @@ class RaceResult(BaseModel):
 class StandingsEntry(BaseModel):
     position: int
     full_name: str
-    team_name: Optional[str] = None
+    team: Optional[str] = None
     points: int
     wins: int
     driver_number: int

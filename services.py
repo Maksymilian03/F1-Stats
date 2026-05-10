@@ -1,6 +1,10 @@
 import httpx
 from fastapi import FastAPI, HTTPException
 import asyncio
+import os
+import json
+import time
+import datetime
 
 
 RACE_POINTS = {
@@ -26,6 +30,9 @@ SPRINT_POINTS = {
     7: 2,
     8: 1
 }
+
+CACHE_DIR = 'cache'
+CACHE_TTL_SECONDS = 3600
 
 
 async def fetch_drivers(session_key='latest') -> dict[int, dict]:
@@ -171,28 +178,37 @@ async def fetch_session_with_semaphore(semphory: asyncio.Semaphore, session_key:
     Funkcja opakowuje fetch_session_results w semafor zeby ograniczyc ilosc jednoczesnych polaczen do api
     """
     async with semphory:
+        await asyncio.sleep(2)  # Dodajemy małe opóźnienie, aby rozłożyć żądania w czasie
         return await fetch_session_results(session_key)
 
 async def get_standings(year: int) -> list[dict]:
     """
     Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
     """
+    # Odczyt z cache
+    cache_path = os.path.join(CACHE_DIR, f'standings_{year}.json')  
+    if os.path.exists(cache_path):
+        if year < datetime.datetime.now().year:
+            with open(cache_path, 'r') as f:
+                return json.load(f)
+        elif year == datetime.datetime.now().year:
+            cache_mtime = os.path.getmtime(cache_path)
+            if time.time() - cache_mtime < CACHE_TTL_SECONDS:
+                with open(cache_path, 'r') as f:
+                    return json.load(f)
 
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
-    semphory = asyncio.Semaphore(1)
+    semaphore = asyncio.Semaphore(2)
 
     race_results, sprint_results, list_of_drivers = await asyncio.gather(
-        asyncio.gather(*[fetch_session_with_semaphore(semphory, key) for key in race_keys]),
-        asyncio.gather(*[fetch_session_with_semaphore(semphory, key) for key in sprint_keys]),
+        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
+        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in sprint_keys]),
         fetch_drivers(session_key=race_keys[-1])
     )
 
     race_points = calculate_points(race_results, RACE_POINTS, count_wins=True)
     sprint_points = calculate_points(sprint_results, SPRINT_POINTS, count_wins=False)
-
-   
-
 
 
     combined = {}
@@ -206,7 +222,15 @@ async def get_standings(year: int) -> list[dict]:
         }
 
     drivers_with_points = merge_driver_details(list_of_drivers, combined)
-    return leaderboard(drivers_with_points)
+
+    result = leaderboard(drivers_with_points)
+
+    # Zapis do cache
+    os.makedirs(CACHE_DIR, exist_ok=True)  
+    with open(cache_path, 'w') as f:
+        json.dump(result, f)
+
+    return result
     
 
     
