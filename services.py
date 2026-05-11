@@ -35,22 +35,52 @@ CACHE_DIR = 'cache'
 CACHE_TTL_SECONDS = 3600
 
 
-async def fetch_drivers(session_key='latest') -> dict[int, dict]:
-    url = f'https://api.openf1.org/v1/drivers?session_key={session_key}'
+async def _fetch_openf1(url: str, not_found_message: str) -> list | dict:
+    """
+    Funkcja pomocnicza do pobierania danych z OpenF1 API z obsługą błędów
+    """
     try:
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
+            response.raise_for_status()
             data = response.json()
             if isinstance(data, dict) and 'detail' in data:
-                raise HTTPException(status_code=404, detail='Nie znaleziono kierowców')
+                raise HTTPException(status_code=404, detail=not_found_message)
+            return data
     
-        list_of_drivers = {driver['driver_number']: driver for driver in response.json()} 
-
-        return list_of_drivers
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
     except httpx.RequestError as e:
         raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
+
+async def fetch_drivers(session_key='latest') -> dict[int, dict]:
+    """
+    Funkcja pobierze wszystkich kierowców z OpenF1 API i zwróci
+    słownik gdzie kluczem jest numer kierowcy a wartością pozostałe informacje o nim
+    """
+    url = f'https://api.openf1.org/v1/drivers?session_key={session_key}'
+    data = await _fetch_openf1(url, 'Nie znaleziono kierowców')
+    return {driver['driver_number']: driver for driver in data}
+
+async def get_race_results(year: int, country: str) -> list[dict]:
+    """
+    Funkcja pobierze wyniki wyscigu z danego roku i kraju i zwroci liste wyników z dodanym imieniem i nazwiskiem kierowcy
+    """
+    url_session = f'https://api.openf1.org/v1/sessions?country_name={country}&session_name=Race&year={year}'
+    data = await _fetch_openf1(url_session, 'Nie znaleziono wyścigu')
+    if not data:
+        raise HTTPException(status_code=404, detail='Nie znaleziono wyścigu')
+    session_key = data[0]['session_key']
+
+    drivers, results = await asyncio.gather(
+        fetch_drivers(session_key),
+        fetch_session_results(session_key)
+    )
+    for result in results:
+        result['full_name'] = drivers[result['driver_number']]['full_name']
+    return results
+
+
 
 async def get_races_and_sprints(year: int) ->tuple[list[int], list[int]]:
     """
@@ -60,53 +90,20 @@ async def get_races_and_sprints(year: int) ->tuple[list[int], list[int]]:
     """
     race_url = f'https://api.openf1.org/v1/sessions?year={year}&session_name=Race'
     sprint_url = f'https://api.openf1.org/v1/sessions?year={year}&session_name=Sprint'
-    try:
-        async with httpx.AsyncClient() as client:
-            race_response, sprint_response = await asyncio.gather(client.get(race_url), client.get(sprint_url))
-            race_response.raise_for_status()
-            sprint_response.raise_for_status()
-
-            race_data = race_response.json()
-            sprint_data = sprint_response.json()    
-
-            if isinstance(race_data, dict) and 'detail' in race_data:
-                raise HTTPException(status_code=404, detail='Nie znaleziono wyscigów')
-            if isinstance(sprint_data, dict) and 'detail' in sprint_data:
-                raise HTTPException(status_code=404, detail='Nie znaleziono sprintów')
-            
-            race_keys = [session['session_key'] for session in  race_data]
-            sprint_keys = [session['session_key'] for session in sprint_data]
-
-            return race_keys, sprint_keys
-        
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
-
-
+    race_session, sprint_session = await asyncio.gather(
+        _fetch_openf1(race_url, 'Nie znaleziono wyscigów'),
+        _fetch_openf1(sprint_url, 'Nie znaleziono sprintów')
+    )
+    race_keys = [session['session_key'] for session in race_session]
+    sprint_keys = [session['session_key'] for session in sprint_session]
+    return race_keys, sprint_keys
 
 async def fetch_session_results(session_key: int) -> list[dict]:
     """
     Funkcja na podstawie klucza sesesji zrwoci wynik tej sesji
     """
     url = f'https://api.openf1.org/v1/session_result?session_key={session_key}'
-    try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
-            response.raise_for_status()
-            data = response.json()
-            if isinstance(data, dict) and 'detail' in data:
-                raise HTTPException(status_code=404, detail='Nie znaleziono sesji')
-            return data
-    
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
-    except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
-
-
-    
+    return await _fetch_openf1(url, 'Nie znaleziono wyników sesji')
 
 def calculate_points(all_session_results: list[list[dict]], points_table: dict[int, int], count_wins: bool = True) -> dict[int, dict]:
     """
