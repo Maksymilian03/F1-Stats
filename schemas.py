@@ -28,3 +28,10 @@ class StandingsEntry(BaseModel):
     driver_number: int
 
 
+class ConstructorEntry(BaseModel):
+    position: int
+    team: str
+    points: int
+    wins: int
+
+

@@ -154,8 +154,26 @@ def merge_driver_details(list_of_drivers: dict[int, dict], standings_data: dict)
     return list_of_merge_drivers
 
 
-
-
+def aggregate_points_by_team(drivers_with_points: dict[int, dict], drivers_info: dict[int, dict]) -> dict[str, dict]:
+    """
+    Funkcja zliczy punkty dla kazdego teamu i zwroci słownik gdzie kluczem bedzie nazwa teamu a wartoscia
+    będzie słownik z kluczami 'points' i 'wins' z sumą punktów i zwyciestw dla kierowców tego teamu
+    """
+    
+    team_points = {}
+    for driver_number, stats in drivers_with_points.items():
+        driver_info = drivers_info.get(driver_number)
+        if driver_info is None:
+            continue
+        team = driver_info['team_name']
+        if team is None:
+            continue
+        if team not in team_points:
+            team_points[team] = {'team': team, 'points': 0, 'wins': 0}
+        team_points[team]['points'] += stats['points']
+        team_points[team]['wins'] += stats['wins']
+    return team_points
+   
 def leaderboard(list_of_drivers_with_points: dict) -> list:
     """
     Funkcja posegreguje kierowcow po ilosci ich punktów od najwiekszej
@@ -183,7 +201,7 @@ async def get_standings(year: int) -> list[dict]:
     Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
     """
     # Odczyt z cache
-    cache_path = os.path.join(CACHE_DIR, f'standings_{year}.json')  
+    cache_path = os.path.join(CACHE_DIR, f'drivers_standings_{year}.json')  
     if os.path.exists(cache_path):
         if year < datetime.datetime.now().year:
             with open(cache_path, 'r') as f:
@@ -230,4 +248,55 @@ async def get_standings(year: int) -> list[dict]:
     return result
     
 
+    
+async def get_constructor_standings(year: int) -> list[dict]:
+    """
+    Funkcja zwroci klasyfikacje konstruktorów w danym sezonie
+    """
+    # Odczyt z cache
+    cache_path = os.path.join(CACHE_DIR, f'constructor_standings_{year}.json')  
+    if os.path.exists(cache_path):
+        if year < datetime.datetime.now().year:
+            with open(cache_path, 'r') as f:
+                return json.load(f)
+        elif year == datetime.datetime.now().year:
+            cache_mtime = os.path.getmtime(cache_path)
+            if time.time() - cache_mtime < CACHE_TTL_SECONDS:
+                with open(cache_path, 'r') as f:
+                    return json.load(f)
+
+    race_keys, sprint_keys = await get_races_and_sprints(year)
+
+    semaphore = asyncio.Semaphore(2)
+
+    race_results, sprint_results, list_of_drivers = await asyncio.gather(
+        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
+        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in sprint_keys]),
+        fetch_drivers(session_key=race_keys[-1])
+    )
+
+    race_points = calculate_points(race_results, RACE_POINTS, count_wins=True)
+    sprint_points = calculate_points(sprint_results, SPRINT_POINTS, count_wins=False)
+
+
+    combined = {}
+    all_drivers = set(race_points.keys()).union(sprint_points.keys())
+    for driver_number in all_drivers:
+        race_stats = race_points.get(driver_number, {'points': 0, 'wins': 0})
+        sprint_stats = sprint_points.get(driver_number, {'points': 0, 'wins': 0})
+        combined[driver_number] = {
+            'points': race_stats['points'] + sprint_stats['points'],
+            'wins': race_stats['wins'] + sprint_stats['wins']
+        }
+
+    teams = aggregate_points_by_team(combined, list_of_drivers)
+
+    result = leaderboard(teams)
+
+    # Zapis do cache
+    os.makedirs(CACHE_DIR, exist_ok=True)  
+    with open(cache_path, 'w') as f:
+        json.dump(result, f)
+
+    return result
     
