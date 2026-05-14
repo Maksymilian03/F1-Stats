@@ -9,11 +9,13 @@ class Driver(BaseModel):
     headshot_url: Optional[str] = None
 
 
+# F1 Api zwraca czasem "gap_to_leader" jako string (np. "1 lap"), a czasem jako float (np. 12.345)
+
 class RaceResult(BaseModel):
     position: Optional[int] = None
     full_name: str
     driver_number: Optional[int] = None
-    gap_to_leader: Optional[float] = None
+    gap_to_leader: Optional[float | str] = None
     dnf: Optional[bool] = None
     dns: Optional[bool] = None
     dsq: Optional[bool] = None
