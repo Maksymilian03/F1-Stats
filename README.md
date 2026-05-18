@@ -17,6 +17,27 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 
 ![Swagger UI](docs/screenshots/swagger-ui.png)
 
+## Roadmap
+
+### Zrobione
+- Asynchroniczne REST API integrujące się z OpenF1 API
+- Równoległe zapytania (asyncio.gather) z limitowaniem
+- Walidacja danych przez Pydantic
+- Własny system cache
+- Testy jednostkowe z mockowaniem
+- Podział na warstwy (main / schemas / services)
+
+### W trakcie
+- Dokończenie testów jednostkowych dla wszystkich funkcji asynchronicznych
+- Konteneryzacja aplikacji (Docker)
+
+### Planowane
+- PostgreSQL — trwałe składowanie i optymalizacja danych
+- Redis — warstwa cache nad bazą danych
+- Model użytkowników z rejestracją i logowaniem
+- Autoryzacja JWT
+- Prosty frontend konsumujący API
+
 ## Technologie
 
 - Python 3.13
