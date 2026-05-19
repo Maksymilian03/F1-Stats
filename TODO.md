@@ -7,7 +7,7 @@ Start: 2026-05-16
 ### Tydzień 1 (Dzień 3-9): Roadmap + dokończenie testów
 
 - [x] Dzień 3 (pon 18.05): Aktualizacja TODO.md + sekcja Roadmap w README + LeetCode
-- [ ] Dzień 4 (wt 19.05): Test happy path fetch_session_results + LeetCode
+- [x] Dzień 4 (wt 19.05): Test happy path fetch_session_results + LeetCode
 - [ ] Dzień 5 (śr 20.05): Testy 404/502/503 fetch_session_results + LeetCode
 - [ ] Dzień 6 (czw 21.05): Test get_races_and_sprints + LeetCode
 - [ ] Dzień 7 (pt 22.05): Refactor — fixtures do conftest.py + LeetCode
