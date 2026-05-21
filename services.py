@@ -188,15 +188,15 @@ def leaderboard(list_of_drivers_with_points: dict) -> list:
     return leaderboard_list
         
 
-async def fetch_session_with_semaphore(semphory: asyncio.Semaphore, session_key: int) -> list[dict]:
+async def fetch_session_with_semaphore(semaphore: asyncio.Semaphore, session_key: int) -> list[dict]:
     """
     Funkcja opakowuje fetch_session_results w semafor zeby ograniczyc ilosc jednoczesnych polaczen do api
     """
-    async with semphory:
+    async with semaphore:
         await asyncio.sleep(2)  # Dodajemy małe opóźnienie, aby rozłożyć żądania w czasie
         return await fetch_session_results(session_key)
 
-async def get_standings(year: int) -> list[dict]:
+async def get_driver_standings(year: int) -> list[dict]:
     """
     Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
     """

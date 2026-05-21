@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Path
 from schemas import Driver, RaceResult, StandingsEntry, ConstructorEntry
 
-from services import fetch_drivers, get_standings, get_race_results, get_constructor_standings
+from services import fetch_drivers, get_driver_standings, get_race_results, get_constructor_standings
 
 
 
@@ -37,7 +37,7 @@ async def standings_endpoint(
         description="Rok musi być pomiędzy 2023 a 2025"
         )
     ):
-    return await get_standings(year)
+    return await get_driver_standings(year)
 
 
 
