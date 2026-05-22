@@ -10,7 +10,7 @@ Start: 2026-05-16
 - [x] Dzień 4 (wt 19.05): Test happy path fetch_session_results + LeetCode
 - [x] Dzień 5 (śr 20.05): "Test get_races_and_sprints (POMIJAM testy 404/502/503 fetch_session_results — duplikowałyby testy _fetch_openf1)" + LeetCode
 - [x] Dzień 6 (czw 21.05): Test get_drivers_standings + LeetCode #345 Reverse Vowels 
-- [ ] Dzień 7 (pt 22.05): Refactor — fixtures do conftest.py + LeetCode
+- [x] Dzień 7 (pt 22.05): Refactor — fixtures do conftest.py + LeetCode
 - [ ] Dzień 8 (sob 23.05): Docker teoria + notatki learning_notes.md + LeetCode
 - [ ] Dzień 9 (niedz 24.05, LEKKO): Update README test count + przegląd tygodnia
 
