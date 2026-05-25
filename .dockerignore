@@ -1,0 +1,38 @@
+# Python artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environment
+venv/
+
+# Git
+.git/
+.gitignore
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Logi
+*.log
+
+# Sekrety
+.env
+
+# F1-Stats specific
+cache/
+
+# Dokumentacja dev (nie potrzebne w image)
+TODO.md
+learning_notes.md
+docs/
+
+# Tests (NIE idą do prod image, bo nie ma pytesta)
+tests/
+
