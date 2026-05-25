@@ -16,7 +16,7 @@ Start: 2026-05-16
 
 ### Tydzień 2 (Dzień 10-16): Docker + CI/CD
 
-- [ ] Dzień 10 (pon 25.05): Dockerfile (zrozum każdą linię) + LeetCode
+- [x] Dzień 10 (pon 25.05): Dockerfile (zrozum każdą linię) + LeetCode
 - [ ] Dzień 11 (wt 26.05): .dockerignore + build i uruchomienie lokalnie + LeetCode
 - [ ] Dzień 12 (śr 27.05): docker-compose.yml (sam serwis app) + LeetCode
 - [ ] Dzień 13 (czw 28.05): GitHub Actions — workflow pytest + LeetCode
