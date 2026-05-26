@@ -26,6 +26,7 @@ venv/
 .env
 
 # F1-Stats specific
+requirements-dev.txt
 cache/
 
 # Dokumentacja dev (nie potrzebne w image)
@@ -36,3 +37,5 @@ docs/
 # Tests (NIE idą do prod image, bo nie ma pytesta)
 tests/
 
+# README - zostawiamy 
+# LICENSE - ZOSTAJE w image (wymagane prawnie przy dystrybucji)
