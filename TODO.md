@@ -19,7 +19,7 @@ Start: 2026-05-16
 - [x] Dzień 10 (pon 25.05): Dockerfile (zrozum każdą linię) + LeetCode
 - [x] Dzień 11 (wt 26.05): .dockerignore (już Dz10) + docker build lokalnie + LeetCode #334 Increasing Triplet Subsequence (Medium, O(n) czas O(1) pamięć, greedy)
 - [x] Dzień 12 (śr 27.05): docker-compose.yml (dev config: volumes + --reload dla live reload) — zrobione dzień wcześniej
-- [ ] Dzień 13 (czw 28.05): GitHub Actions — workflow pytest + LeetCode
+- [x] Dzień 13 (czw 28.05): GitHub Actions — workflow pytest + LeetCode — zrobione dzień wcześniej
 - [ ] Dzień 14 (pt 29.05): CI badge + sekcja Docker w README + LeetCode
 - [ ] Dzień 15 (sob 30.05): Lintery (ruff) + mypy w CI + LeetCode
 - [ ] Dzień 16 (niedz 31.05, LEKKO): Refleksja tygodnia + learning_notes
