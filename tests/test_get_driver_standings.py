@@ -1,5 +1,8 @@
 from unittest.mock import patch
 import pytest, json
+from fastapi.testclient import TestClient
+from main import app, CURRENT_YEAR
+
 
 from services import get_driver_standings
 
@@ -95,3 +98,74 @@ async def test_get_driver_standings_returns_all_drivers_with_cached_data(drivers
     drivers_mock.assert_not_called()
     session_mock.assert_not_called()
     races_and_sprints_mock.assert_not_called()
+
+@pytest.mark.asyncio
+@patch('services.get_races_and_sprints')
+async def test_get_driver_standings_returns_empty_list_when_no_races_or_sprints(
+     races_and_sprints_mock, tmp_path, monkeypatch):
+    # Arrange
+    year = 2026
+    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
+    races_and_sprints_mock.return_value = ([], [])
+
+    # Act
+    result = await get_driver_standings(year)
+
+    # Assert
+    assert result == []
+
+client = TestClient(app)
+def test_get_driver_standings_raise_422_when_year_is_less_than_2023():
+    # Arrange
+    year = 2000
+
+
+    # Act
+    response = client.get(f'/standings/{year}/')
+
+    # Assert
+    assert response.status_code == 422
+    assert response.json() == {
+  "detail": [
+    {
+      "type": "greater_than_equal",
+      "loc": [
+        "path",
+        "year"
+      ],
+      "msg": "Input should be greater than or equal to 2023",
+      "input": "2000",
+      "ctx": {
+        "ge": 2023
+      }
+    }
+  ]
+}
+    
+
+def test_get_driver_standings_raise_422_when_year_is_greater_than_2025():
+    # Arrange
+    year = 2100
+
+    # Act
+    response = client.get(f'/standings/{year}/')
+
+    # Assert
+    assert response.status_code == 422
+    assert response.json() == {
+  "detail": [
+    {
+      "type": "less_than_equal",
+      "loc": [
+        "path",
+        "year"
+      ],
+      "msg": f"Input should be less than or equal to {CURRENT_YEAR}",
+      "input": "2100",
+      "ctx": {
+        "le": CURRENT_YEAR
+      }
+    }
+  ]
+}

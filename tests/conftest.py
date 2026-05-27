@@ -41,8 +41,17 @@ def fake_race_keys():
     return [9575, 9573, 9572]
 
 @pytest.fixture
+def fake_empty_race_keys():
+    return []
+
+@pytest.fixture
 def fake_sprint_keys():
     return [9579, 9888, 9571]
+
+@pytest.fixture
+def fake_empty_sprint_keys():
+    return []
+
 
 
 @pytest.fixture
