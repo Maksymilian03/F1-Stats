@@ -27,10 +27,11 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - Własny system cache
 - Testy jednostkowe z mockowaniem
 - Podział na warstwy (main / schemas / services)
+- Konteneryzacja aplikacji (Docker + docker-compose)
+- CI/CD (GitHub Actions — pytest na każdym pushu)
 
 ### W trakcie
 - Testy dla get_constructor_standings (pozostała funkcja serwisowa)
-- Konteneryzacja aplikacji (Docker)
 
 ### Planowane
 - PostgreSQL — trwałe składowanie i optymalizacja danych
@@ -49,6 +50,8 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - uvicorn 0.46
 - OpenF1 API (zewnętrzne źródło danych)
 - Render (deploy, Frankfurt EU)
+- Docker + docker-compose (konteneryzacja)
+- GitHub Actions (CI/CD)
 
 ## Funkcjonalności
 
@@ -75,6 +78,29 @@ uvicorn main:app --reload
 ```
 
 Aplikacja będzie dostępna pod `http://localhost:8000`. Dokumentacja Swagger pod `http://localhost:8000/docs`.
+
+## Docker
+
+Aplikację można uruchomić w kontenerze Docker. Dostępne są dwa tryby:
+
+### Tryb produkcyjny (Dockerfile)
+
+```bash
+docker build -t f1stats:latest .
+docker run -p 8000:8000 f1stats:latest
+```
+
+Image bazuje na `python:3.13.2-slim` (257 MB). Aplikacja uruchamiana przez `uvicorn` bez `--reload`.
+
+### Tryb deweloperski (docker-compose)
+
+```bash
+docker compose up
+```
+
+Konfiguracja deweloperska z `volumes` (bind mount) i `--reload` — zmiany w kodzie są od razu widoczne w kontenerze bez ponownego buildu.
+
+Aplikacja będzie dostępna pod `http://localhost:8000`.
 
 ## Endpointy API
 
