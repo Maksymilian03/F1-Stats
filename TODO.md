@@ -22,9 +22,9 @@ Start: 2026-05-16
 - [x] Dzień 11 (wt 26.05): docker build lokalnie + docker run (Swagger UI w kontenerze) + LeetCode #334
 - [x] Dzień 12 (śr 27.05): docker-compose.yml (dev: volumes + –reload) + LeetCode #443
 - [x] Dzień 13 (czw 28.05): GitHub Actions CI workflow (pytest, on: push) + LeetCode
-- [ ] Dzień 14 (pt 29.05):
-  - [ ] CI badge w README
-  - [ ] Sekcja Docker w README (jak uruchomić lokalnie, jak przez docker-compose)
+- [x] Dzień 14 (pt 29.05):
+  - [x] CI badge w README
+  - [x] Sekcja Docker w README (jak uruchomić lokalnie, jak przez docker-compose)
   - [ ] Naprawa `race_keys[-1]` bug w `get_constructor_standings` (identyczna jak w get_driver_standings)
   - [ ] Uproszczenie asercji w testach 422 (status_code zamiast pełnego JSON)
   - [ ] Przemyślenie `CURRENT_YEAR` — przenieść do `services.py` lub `config.py`?
@@ -33,9 +33,9 @@ Start: 2026-05-16
   - [ ] Lintery (ruff) + mypy w CI
   - [ ] Testy dla `get_constructor_standings` (wzorzec znasz z get_driver_standings)
   - [ ] LeetCode
-- [ ] Dzień 16 (niedz 31.05, LEKKO):
-  - [ ] Refleksja tygodnia + learning_notes.md (Tydzień 2 kondensaty)
-  - [ ] Update README — licznik testów
+- [x] Dzień 16 (niedz 31.05, LEKKO):
+  - [x] Refleksja tygodnia + learning_notes.md (Tydzień 2 kondensaty)
+  - [x] Update README — licznik testów
 
 -----
 
