@@ -12,6 +12,10 @@ jobs:
         with:
           python-version: '3.13.2'  
       - name: Install dependencies
-        run: pip install -r requirements-dev.txt      
+        run: pip install -r requirements-dev.txt  
+      - name: Run ruff linter
+        run: ruff check .
+      - name: Run mypy type checker
+        run: mypy .    
       - name: Run tests
         run: python -m pytest tests/     
