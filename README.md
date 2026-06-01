@@ -7,6 +7,8 @@ Backend REST API zwracający aktualne klasyfikacje, wyniki wyścigów i informac
 ![Pydantic](https://img.shields.io/badge/Pydantic-2.13-E92063?logo=pydantic&logoColor=white)
 ![Pytest](https://img.shields.io/badge/Tests-38%20passed-brightgreen?logo=pytest&logoColor=white)
 ![CI](https://github.com/Maksymilian03/F1-Stats/actions/workflows/ci.yml/badge.svg)
+![Ruff](https://img.shields.io/badge/Linting-ruff-261230?logo=ruff)
+![Mypy](https://img.shields.io/badge/Type%20check-mypy-2A6DB2)
 
 ## Live Demo
 
