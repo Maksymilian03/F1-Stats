@@ -1,5 +1,5 @@
-import pytest
 from services import leaderboard
+
 
 def test_leaderboard_empty_input_returns_empty_list():
     drivers_with_points = {}

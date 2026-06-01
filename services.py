@@ -1,11 +1,12 @@
-import httpx
-from fastapi import FastAPI, HTTPException
 import asyncio
-import os
-import json
-import time
 import datetime
+import json
+import os
+import time
+from typing import cast
 
+import httpx
+from fastapi import HTTPException
 
 RACE_POINTS = {
     1: 25,
@@ -48,12 +49,12 @@ async def _fetch_openf1(url: str, not_found_message: str) -> list | dict:
             data = response.json()
             if isinstance(data, dict) and 'detail' in data:
                 raise HTTPException(status_code=404, detail=not_found_message)
-            return data
-    
+            return cast(list | dict, data)
+
     except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}')
+        raise HTTPException(status_code=502, detail=f'OpenF1 Api error: {e}') from e
     except httpx.RequestError as e:
-        raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}')
+        raise HTTPException(status_code=503, detail=f'Błąd połączenia: {e}') from e
 
 async def fetch_drivers(session_key='latest') -> dict[int, dict]:
     """
@@ -66,7 +67,8 @@ async def fetch_drivers(session_key='latest') -> dict[int, dict]:
 
 async def get_race_results(year: int, country: str) -> list[dict]:
     """
-    Funkcja pobierze wyniki wyscigu z danego roku i kraju i zwroci liste wyników z dodanym imieniem i nazwiskiem kierowcy
+    Funkcja pobierze wyniki wyscigu z danego roku i kraju i zwroci
+    liste wyników z dodanym imieniem i nazwiskiem kierowcy
     """
     url_session = f'https://api.openf1.org/v1/sessions?country_name={country}&session_name=Race&year={year}'
     data = await _fetch_openf1(url_session, 'Nie znaleziono wyścigu')
@@ -80,14 +82,14 @@ async def get_race_results(year: int, country: str) -> list[dict]:
     )
     for result in results:
         result['full_name'] = drivers[result['driver_number']]['full_name']
-    return results
+    return cast(list[dict], results)
 
 
 
 async def get_races_and_sprints(year: int) ->tuple[list[int], list[int]]:
     """
     Funkcja pobierze wszytskie wyscigi i sprinty
-    z danego roku i zwroci w dwoch listach ich klucze sesji 
+    z danego roku i zwroci w dwoch listach ich klucze sesji
     pierwsza zwrocona lista to klucze wyscigów a druga to klucze sprintów
     """
     race_url = f'https://api.openf1.org/v1/sessions?year={year}&session_name=Race'
@@ -101,13 +103,14 @@ async def get_races_and_sprints(year: int) ->tuple[list[int], list[int]]:
     return race_keys, sprint_keys
 
 async def fetch_session_results(session_key: int) -> list[dict]:
-    """
-    Funkcja na podstawie klucza sesesji zrwoci wynik tej sesji
-    """
     url = f'https://api.openf1.org/v1/session_result?session_key={session_key}'
-    return await _fetch_openf1(url, 'Nie znaleziono wyników sesji')
+    result = await _fetch_openf1(url, 'Nie znaleziono wyników sesji')
+    return cast(list[dict], result)
 
-def calculate_points(all_session_results: list[list[dict]], points_table: dict[int, int], count_wins: bool = True) -> dict[int, dict]:
+def calculate_points(all_session_results: list[list[dict]],
+                      points_table: dict[int, int],
+                        count_wins: bool = True
+                        ) -> dict[int, dict]:
     """
     Funkcja zliczy ilość punktów dla kierowcy
     i ilosc zwyciest w wyscigach i zwroci to w postaci:
@@ -119,7 +122,7 @@ def calculate_points(all_session_results: list[list[dict]], points_table: dict[i
             driver_number, position = driver_result['driver_number'], driver_result['position']
             if driver_number not in result:
                 result[driver_number] = {'points': 0, 'wins': 0}
-            
+
             result[driver_number]['points'] += points_table.get(position, 0)
             if count_wins and position == 1:
                 result[driver_number]['wins'] += 1
@@ -134,7 +137,7 @@ def merge_driver_details(list_of_drivers: dict[int, dict], standings_data: dict)
     """
     list_of_merge_drivers = {}
     for driver_number, stats in standings_data.items():
-        
+
         points = stats['points']
         wins = stats['wins']
         driver_info = list_of_drivers.get(driver_number)
@@ -156,12 +159,17 @@ def merge_driver_details(list_of_drivers: dict[int, dict], standings_data: dict)
     return list_of_merge_drivers
 
 
-def aggregate_points_by_team(drivers_with_points: dict[int, dict], drivers_info: dict[int, dict]) -> dict[str, dict]:
+def aggregate_points_by_team(
+        drivers_with_points: dict[int, dict],
+        drivers_info: dict[int, dict]
+        ) -> dict[str, dict]:
     """
-    Funkcja zliczy punkty dla kazdego teamu i zwroci słownik gdzie kluczem bedzie nazwa teamu a wartoscia
-    będzie słownik z kluczami 'points' i 'wins' z sumą punktów i zwyciestw dla kierowców tego teamu
+    Funkcja zliczy punkty dla kazdego teamu i zwroci
+    słownik gdzie kluczem bedzie nazwa teamu a wartoscia
+    będzie słownik z kluczami 'points' i 'wins' z sumą
+    punktów i zwyciestw dla kierowców tego teamu
     """
-    
+
     team_points = {}
     for driver_number, stats in drivers_with_points.items():
         driver_info = drivers_info.get(driver_number)
@@ -175,24 +183,33 @@ def aggregate_points_by_team(drivers_with_points: dict[int, dict], drivers_info:
         team_points[team]['points'] += stats['points']
         team_points[team]['wins'] += stats['wins']
     return team_points
-   
+
 def leaderboard(list_of_drivers_with_points: dict) -> list:
     """
     Funkcja posegreguje kierowcow po ilosci ich punktów od najwiekszej
-    do najmniejszej jesli kierowcy maja tyle samo punktow 
+    do najmniejszej jesli kierowcy maja tyle samo punktow
     to pod uwage bedzie brana ilosc zwyciestw w wyscigach
     i zwroci liste kierowcow posortowana od najwiekszej do najmniejszej
     """
-    leaderboard_list = sorted(list_of_drivers_with_points.values(), key=lambda x: (x['points'], x['wins']), reverse=True)
+    leaderboard_list = sorted(
+        list_of_drivers_with_points.values(),
+        key=lambda x: (x['points'],
+        x['wins']),
+        reverse=True
+        )
 
     for index, driver in enumerate(leaderboard_list):
         driver['position'] = index + 1
     return leaderboard_list
-        
 
-async def fetch_session_with_semaphore(semaphore: asyncio.Semaphore, session_key: int) -> list[dict]:
+
+async def fetch_session_with_semaphore(
+        semaphore: asyncio.Semaphore,
+        session_key: int
+        ) -> list[dict]:
     """
-    Funkcja opakowuje fetch_session_results w semafor zeby ograniczyc ilosc jednoczesnych polaczen do api
+    Funkcja opakowuje fetch_session_results w semafor
+    zeby ograniczyc ilosc jednoczesnych polaczen do api
     """
     async with semaphore:
         await asyncio.sleep(2)  # Dodajemy małe opóźnienie, aby rozłożyć żądania w czasie
@@ -203,16 +220,16 @@ async def get_driver_standings(year: int) -> list[dict]:
     Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
     """
     # Odczyt z cache
-    cache_path = os.path.join(CACHE_DIR, f'drivers_standings_{year}.json')  
+    cache_path = os.path.join(CACHE_DIR, f'drivers_standings_{year}.json')
     if os.path.exists(cache_path):
         if year < datetime.datetime.now().year:
-            with open(cache_path, 'r') as f:
-                return json.load(f)
+            with open(cache_path) as f:
+                return cast(list[dict], json.load(f))
         elif year == datetime.datetime.now().year:
             cache_mtime = os.path.getmtime(cache_path)
             if time.time() - cache_mtime < CACHE_TTL_SECONDS:
-                with open(cache_path, 'r') as f:
-                    return json.load(f)
+                with open(cache_path) as f:
+                    return cast(list[dict], json.load(f))
 
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
@@ -220,7 +237,7 @@ async def get_driver_standings(year: int) -> list[dict]:
 
     if not race_keys:
         return []
-    
+
     race_results, sprint_results, list_of_drivers = await asyncio.gather(
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in sprint_keys]),
@@ -246,29 +263,29 @@ async def get_driver_standings(year: int) -> list[dict]:
     result = leaderboard(drivers_with_points)
 
     # Zapis do cache
-    os.makedirs(CACHE_DIR, exist_ok=True)  
+    os.makedirs(CACHE_DIR, exist_ok=True)
     with open(cache_path, 'w') as f:
         json.dump(result, f)
 
     return result
-    
 
-    
+
+
 async def get_constructor_standings(year: int) -> list[dict]:
     """
     Funkcja zwroci klasyfikacje konstruktorów w danym sezonie
     """
     # Odczyt z cache
-    cache_path = os.path.join(CACHE_DIR, f'constructor_standings_{year}.json')  
+    cache_path = os.path.join(CACHE_DIR, f'constructor_standings_{year}.json')
     if os.path.exists(cache_path):
         if year < datetime.datetime.now().year:
-            with open(cache_path, 'r') as f:
-                return json.load(f)
+            with open(cache_path) as f:
+                return cast(list[dict], json.load(f))
         elif year == datetime.datetime.now().year:
             cache_mtime = os.path.getmtime(cache_path)
             if time.time() - cache_mtime < CACHE_TTL_SECONDS:
-                with open(cache_path, 'r') as f:
-                    return json.load(f)
+                with open(cache_path) as f:
+                    return cast(list[dict], json.load(f))
 
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
@@ -302,9 +319,8 @@ async def get_constructor_standings(year: int) -> list[dict]:
     result = leaderboard(teams)
 
     # Zapis do cache
-    os.makedirs(CACHE_DIR, exist_ok=True)  
+    os.makedirs(CACHE_DIR, exist_ok=True)
     with open(cache_path, 'w') as f:
         json.dump(result, f)
 
     return result
-    

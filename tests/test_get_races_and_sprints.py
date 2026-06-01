@@ -1,4 +1,5 @@
 from unittest.mock import patch
+
 import pytest
 
 
@@ -31,4 +32,3 @@ async def test_fetch_race_and_sprint_keys_returns_list_of_session_keys(mock_fetc
     assert 'session_name=Sprint' in mock_fetch_openf1.call_args_list[1].args[0]
 
 
-    

@@ -1,5 +1,5 @@
-import pytest
 from services import merge_driver_details
+
 
 def test_merge_driver_details_combines_points_and_info_for_one_driver():
     drivers_with_points = {
@@ -20,7 +20,7 @@ def test_merge_driver_details_combines_points_and_info_for_one_driver():
 
 def test_merge_driver_details_empty_input_returns_empty_dict():
     drivers_with_points = {}
-    drivers_info = {}   
+    drivers_info = {}
 
     result = merge_driver_details(drivers_info, drivers_with_points)
 
@@ -53,7 +53,7 @@ def test_merge_driver_details_combines_points_and_info_for_each_driver():
     drivers_with_points = {
         1: {"points": 100, "wins": 5},
         44: {"points": 150, "wins": 3},
-    }   
+    }
     drivers_info = {
         1: {"full_name": "Max Verstappen", "team_name": "Red Bull Racing"},
         44: {"full_name": "Lewis Hamilton", "team_name": "Mercedes"},
@@ -63,7 +63,7 @@ def test_merge_driver_details_combines_points_and_info_for_each_driver():
 
     assert result[1]["full_name"] == "Max Verstappen"
     assert result[1]["team"] == "Red Bull Racing"
-    assert result[1]["points"] == 100   
+    assert result[1]["points"] == 100
     assert result[1]["wins"] == 5
     assert result[1]["driver_number"] == 1
 

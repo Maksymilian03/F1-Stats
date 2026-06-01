@@ -1,6 +1,4 @@
-import pytest
-from services import calculate_points, RACE_POINTS, SPRINT_POINTS
-
+from services import RACE_POINTS, calculate_points
 
 
 def test_calculate_points_empty_input_returns_empty_dict():

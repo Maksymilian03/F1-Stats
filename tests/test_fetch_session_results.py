@@ -1,6 +1,6 @@
 from unittest.mock import patch
-import pytest
 
+import pytest
 
 
 @pytest.mark.asyncio
@@ -18,7 +18,7 @@ async def test_fetch_session_results_returns_dict_of_results(mock_fetch_openf1):
     from services import fetch_session_results
     result = await fetch_session_results(session_key=session_key)
 
-    assert str(session_key) in mock_fetch_openf1.call_args.args[0] 
+    assert str(session_key) in mock_fetch_openf1.call_args.args[0]
     assert result == fake_session_results
 
 

@@ -1,10 +1,10 @@
 from unittest.mock import patch
-import pytest, json
+
+import pytest
 from fastapi.testclient import TestClient
+
 from main import app
-
-
-from services import get_constructor_standings, CURRENT_YEAR
+from services import CURRENT_YEAR, get_constructor_standings
 
 
 @pytest.mark.asyncio
@@ -13,7 +13,7 @@ from services import get_constructor_standings, CURRENT_YEAR
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_returns_correct_position(drivers_mock, session_mock, races_and_sprints_mock,
      tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
-    
+
     # Arrange
     monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
 
@@ -35,7 +35,7 @@ async def test_get_constructor_standings_returns_correct_position(drivers_mock, 
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_calculates_total_points_correctly(drivers_mock, session_mock, races_and_sprints_mock,
          tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
-    
+
     # Arrange
     monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
 
@@ -63,13 +63,13 @@ async def test_get_constructor_standings_calculates_total_points_correctly(drive
     assert result[1]['points'] == mercedes_points
     assert result[2]['points'] == ferrari_points
 
-@pytest.mark.asyncio    
+@pytest.mark.asyncio
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_wins(drivers_mock, session_mock, races_and_sprints_mock,
          tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
-    
+
     # Arrange
     monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
 
@@ -91,7 +91,7 @@ async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_win
     mercedes_wins = lewis_hamilton_wins + valtteri_bottas_wins
 
     charles_leclerc_wins = 0
-    carlos_sainz_wins = 0 
+    carlos_sainz_wins = 0
     ferrari_wins = charles_leclerc_wins + carlos_sainz_wins
 
     assert result[0]['wins'] == red_bull_wins
@@ -100,7 +100,7 @@ async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_win
 
 
 @pytest.mark.asyncio
-@patch('services.get_races_and_sprints')     
+@patch('services.get_races_and_sprints')
 async def test_get_constructor_standings_returns_empty_list_when_no_races_or_sprints(races_and_sprints_mock,
                                                                                       tmp_path, monkeypatch):
     # Arrange
@@ -118,7 +118,7 @@ async def test_get_constructor_standings_returns_empty_list_when_no_races_or_spr
 client = TestClient(app)
 def test_get_constructor_standings_raise_422_when_year_is_less_than_2023():
     # Arrange
-    year = 2000 
+    year = 2000
 
     # Act
     response = client.get(f"/standings/constructors/{year}/")

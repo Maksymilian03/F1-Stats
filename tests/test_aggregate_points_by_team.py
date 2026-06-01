@@ -1,4 +1,3 @@
-import pytest
 from services import aggregate_points_by_team
 
 

@@ -1,10 +1,11 @@
+import json
 from unittest.mock import patch
-import pytest, json
+
+import pytest
 from fastapi.testclient import TestClient
+
 from main import app
-
-
-from services import get_driver_standings, CURRENT_YEAR
+from services import CURRENT_YEAR, get_driver_standings
 
 
 @pytest.mark.asyncio
@@ -71,7 +72,7 @@ async def test_get_driver_standings_does_not_count_sprint_wins_as_total_wins(dri
     result = await get_driver_standings(2023)
 
     # Assert
-    
+
     assert result[0]['wins'] == 1 + 0 + 1 + 0 + 0 + 0
     assert result[1]['wins'] == 0 + 1 + 0 + 0 + 0 + 0
     assert result[2]['wins'] == 0 + 0 + 0 + 0 + 0 + 0
@@ -89,7 +90,7 @@ async def test_get_driver_standings_returns_all_drivers_with_cached_data(drivers
     cache_file = tmp_path / f'drivers_standings_{year}.json'
 
     cache_file.write_text(json.dumps(fake_cached_data))
-    
+
     # Act
     result = await get_driver_standings(year)
 

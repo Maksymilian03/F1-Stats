@@ -1,10 +1,14 @@
+
 from fastapi import FastAPI, Path
-from schemas import Driver, RaceResult, StandingsEntry, ConstructorEntry
 
-from services import fetch_drivers, get_driver_standings, get_race_results, get_constructor_standings, CURRENT_YEAR
-
-from datetime import datetime
-
+from schemas import ConstructorEntry, Driver, RaceResult, StandingsEntry
+from services import (
+    CURRENT_YEAR,
+    fetch_drivers,
+    get_constructor_standings,
+    get_driver_standings,
+    get_race_results,
+)
 
 app = FastAPI()
 
@@ -21,15 +25,18 @@ async def drivers_endpoint():
 
 
 @app.get('/results/{year}/{country}/', response_model=list[RaceResult])
-async def race_results_endpoint(year: int = Path(..., ge=2023, le=CURRENT_YEAR), country: str = Path(...)):
+async def race_results_endpoint(
+    year: int = Path(..., ge=2023, le=CURRENT_YEAR),
+    country: str = Path(...),
+):
     return await get_race_results(year, country)
 
 
 @app.get('/standings/constructors/{year}/', response_model=list[ConstructorEntry])
 async def constructor_standings_endpoint(year: int = Path(..., ge=2023, le=CURRENT_YEAR)):
     return await get_constructor_standings(year)
-   
-   
+
+
 @app.get('/standings/{year}/', response_model=list[StandingsEntry])
 async def standings_endpoint(
     year: int = Path(
@@ -41,5 +48,4 @@ async def standings_endpoint(
 
 
 
-    
-    
+

@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture
 def fake_drivers():
     return {
@@ -8,7 +9,7 @@ def fake_drivers():
         16: {"driver_number": 16, "full_name": "Charles Leclerc", "team_name": "Ferrari"},
         6: {"driver_number": 6, "full_name": "Sergio Perez", "team_name": "Red Bull"},
         45: {"driver_number": 45, "full_name": "Carlos Sainz", "team_name": "Ferrari"},
-        77: {"driver_number": 77, "full_name": "Valtteri Bottas", "team_name": "Mercedes"},   
+        77: {"driver_number": 77, "full_name": "Valtteri Bottas", "team_name": "Mercedes"},
     }
 
 @pytest.fixture
