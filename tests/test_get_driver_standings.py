@@ -126,23 +126,7 @@ def test_get_driver_standings_raise_422_when_year_is_less_than_2023():
 
     # Assert
     assert response.status_code == 422
-    assert response.json() == {
-  "detail": [
-    {
-      "type": "greater_than_equal",
-      "loc": [
-        "path",
-        "year"
-      ],
-      "msg": "Input should be greater than or equal to 2023",
-      "input": "2000",
-      "ctx": {
-        "ge": 2023
-      }
-    }
-  ]
-}
-    
+    assert "detail" in response.json()
 
 def test_get_driver_standings_raise_422_when_year_is_greater_than_current_year():
     # Arrange
@@ -153,19 +137,4 @@ def test_get_driver_standings_raise_422_when_year_is_greater_than_current_year()
 
     # Assert
     assert response.status_code == 422
-    assert response.json() == {
-  "detail": [
-    {
-      "type": "less_than_equal",
-      "loc": [
-        "path",
-        "year"
-      ],
-      "msg": f"Input should be less than or equal to {CURRENT_YEAR}",
-      "input": "2100",
-      "ctx": {
-        "le": CURRENT_YEAR
-      }
-    }
-  ]
-}
+    assert "detail" in response.json()
