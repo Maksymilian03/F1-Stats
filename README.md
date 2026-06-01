@@ -1,11 +1,11 @@
 # F1-Stats
 
-Backend REST API zwracający aktualne klasyfikacje, wyniki wyścigów i informacje o kierowcach Formuły 1. Asynchroniczne pobieranie danych z OpenF1 API, cache'owanie, walidacja Pydantic oraz 29 testów jednostkowych z mockowaniem async (pytest fixtures + monkeypatch + tmp_path).
+Backend REST API zwracający aktualne klasyfikacje, wyniki wyścigów i informacje o kierowcach Formuły 1. Asynchroniczne pobieranie danych z OpenF1 API, cache'owanie, walidacja Pydantic oraz 38 testów jednostkowych z mockowaniem async (pytest fixtures + monkeypatch + tmp_path).
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?logo=fastapi&logoColor=white)
 ![Pydantic](https://img.shields.io/badge/Pydantic-2.13-E92063?logo=pydantic&logoColor=white)
-![Pytest](https://img.shields.io/badge/Tests-29%20passed-brightgreen?logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Tests-38%20passed-brightgreen?logo=pytest&logoColor=white)
 ![CI](https://github.com/Maksymilian03/F1-Stats/actions/workflows/ci.yml/badge.svg)
 
 ## Live Demo
@@ -29,9 +29,12 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - Podział na warstwy (main / schemas / services)
 - Konteneryzacja aplikacji (Docker + docker-compose)
 - CI/CD (GitHub Actions — pytest na każdym pushu)
+- Testy dla get_constructor_standings (pozostała funkcja serwisowa)
 
 ### W trakcie
-- Testy dla get_constructor_standings (pozostała funkcja serwisowa)
+- Lintery (ruff) i type checking (mypy) w CI
+- Refactor wspólnej logiki get_driver_standings i get_constructor_standings (DRY)
+
 
 ### Planowane
 - PostgreSQL — trwałe składowanie i optymalizacja danych
@@ -60,7 +63,7 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - Rate limiting (Semaphore + sleep)
 - Obsługa błędów HTTP (404 / 502 / 503) z mockowaniem retry'ów
 - Walidacja parametrów (Pydantic + Path z ge/le)
-- 29 testów jednostkowych z pytest (fixtures w conftest.py, monkeypatch dla stałych, tmp_path dla I/O, side_effect dla wielokrotnych wywołań mocka)
+- 38 testów jednostkowych z pytest (fixtures w conftest.py, monkeypatch dla stałych, tmp_path dla I/O, side_effect dla wielokrotnych wywołań mocka)
 - Clean architecture (separacja services/routers/schemas)
 
 ## Instalacja
@@ -144,7 +147,7 @@ Aplikacja jest podzielona na trzy warstwy:
 - `main.py` — Routery FastAPI + walidacja parametrów (Path)
 - `services.py` — Logika biznesowa, integracja z OpenF1, cache
 - `schemas.py` — Modele Pydantic (response_model)
-- `tests/` — 29 testów jednostkowych:
+- `tests/` — 38 testów jednostkowych:
   - logika obliczeń: calculate_points, aggregate_points_by_team, leaderboard, merge_driver_details
   - integracja z OpenF1 (mock async): fetch_drivers, fetch_session_results, get_races_and_sprints
   - endpoint orchestracji: get_driver_standings (happy path + cache hit)
