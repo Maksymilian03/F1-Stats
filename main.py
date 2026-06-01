@@ -1,13 +1,9 @@
 from fastapi import FastAPI, Path
 from schemas import Driver, RaceResult, StandingsEntry, ConstructorEntry
 
-from services import fetch_drivers, get_driver_standings, get_race_results, get_constructor_standings
+from services import fetch_drivers, get_driver_standings, get_race_results, get_constructor_standings, CURRENT_YEAR
 
 from datetime import datetime
-
-CURRENT_YEAR = datetime.now().year
-
-
 
 
 app = FastAPI()

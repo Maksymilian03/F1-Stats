@@ -31,6 +31,8 @@ SPRINT_POINTS = {
     8: 1
 }
 
+CURRENT_YEAR = datetime.datetime.now().year
+
 CACHE_DIR = 'cache'
 CACHE_TTL_SECONDS = 3600
 

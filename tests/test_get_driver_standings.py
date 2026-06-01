@@ -1,10 +1,10 @@
 from unittest.mock import patch
 import pytest, json
 from fastapi.testclient import TestClient
-from main import app, CURRENT_YEAR
+from main import app
 
 
-from services import get_driver_standings
+from services import get_driver_standings, CURRENT_YEAR
 
 
 @pytest.mark.asyncio
@@ -144,9 +144,9 @@ def test_get_driver_standings_raise_422_when_year_is_less_than_2023():
 }
     
 
-def test_get_driver_standings_raise_422_when_year_is_greater_than_2025():
+def test_get_driver_standings_raise_422_when_year_is_greater_than_current_year():
     # Arrange
-    year = 2100
+    year = CURRENT_YEAR + 1
 
     # Act
     response = client.get(f'/standings/{year}/')
