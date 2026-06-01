@@ -1,0 +1,30 @@
+[tool.ruff]
+# Długość linii
+line-length = 100
+# Wersja Python target (sprawdza składnię tylko Python 3.13+)
+target-version = "py313"
+
+[tool.ruff.lint]
+# Reguły do włączenia (kategorie)
+select = [
+    "E",    # pycodestyle errors (style PEP 8)
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes (nieużywane importy, undefined names)
+    "I",    # isort (sortowanie importów)
+    "B",    # bugbear (potencjalne bugi)
+    "UP",   # pyupgrade (modernizacja składni)
+]
+# Reguły do wyłączenia (jeśli okażą się zbyt restrykcyjne)
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+# Testy mogą używać assert i mieć długie nazwy
+"tests/*" = ["E501"]
+
+[tool.mypy]
+python_version = "3.13"
+# Zerowa tolerancja — wszystko musi mieć typy
+strict = false  # Zaczynamy łagodnie, podkręcimy później
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true  # OpenF1 / httpx mogą nie mieć stubów
