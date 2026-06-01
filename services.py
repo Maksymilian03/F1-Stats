@@ -215,8 +215,10 @@ async def get_driver_standings(year: int) -> list[dict]:
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
     semaphore = asyncio.Semaphore(1)
+
     if not race_keys:
         return []
+    
     race_results, sprint_results, list_of_drivers = await asyncio.gather(
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in sprint_keys]),
@@ -269,6 +271,9 @@ async def get_constructor_standings(year: int) -> list[dict]:
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
     semaphore = asyncio.Semaphore(1)
+
+    if not race_keys:
+        return []
 
     race_results, sprint_results, list_of_drivers = await asyncio.gather(
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
