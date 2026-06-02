@@ -41,10 +41,9 @@ Start: 2026-05-16
 
 ### Tydzień 3 (Dzień 17-23): PostgreSQL — nauka + integracja
 
-- [ ] Dzień 17 (pon 01.06):
-  - [ ] SQL podstawy (SELECT/WHERE/JOIN/normalizacja) + notatki
+- [x] Dzień 17 (pon 01.06):
+  - [x] SQL podstawy (SELECT/WHERE/JOIN/normalizacja) + notatki
   - [ ] Walidacja inputu w endpointach — `year` < 2023 lub > CURRENT_YEAR → 422 (już masz testy, dopisz do reszty endpointów)
-  - [ ] LeetCode
 - [ ] Dzień 18 (wt 02.06):
   - [ ] PostgreSQL w docker-compose (nowy serwis `db`)
   - [ ] Połączenie app z PostgreSQL (env vars, DATABASE_URL)
