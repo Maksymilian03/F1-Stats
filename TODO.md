@@ -43,7 +43,7 @@ Start: 2026-05-16
 
 - [x] Dzień 17 (pon 01.06, odrobiony wt 02.06):
   - [x] SQL podstawy (SELECT/WHERE/JOIN/normalizacja) + notatki
-- [x] Dzień 18 (śr 03.06, BEZ CZASU):
+- [x] Dzień 18 (wt 02.06, BEZ CZASU):
   - [x] Wszystkie zadania przesunięte na czw-sob
 - [x] Dzień 19 (śr 03.06):
   - [x] Wszystkie zadania przesunięte na czw-sob
