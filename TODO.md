@@ -41,30 +41,31 @@ Start: 2026-05-16
 
 ### Tydzień 3 (Dzień 17-23): PostgreSQL — nauka + integracja
 
-- [x] Dzień 17 (pon 01.06):
+- [x] Dzień 17 (pon 01.06, odrobiony wt 02.06):
   - [x] SQL podstawy (SELECT/WHERE/JOIN/normalizacja) + notatki
-  - [ ] Walidacja inputu w endpointach — `year` < 2023 lub > CURRENT_YEAR → 422 (już masz testy, dopisz do reszty endpointów)
-- [ ] Dzień 18 (wt 02.06):
-  - [ ] PostgreSQL w docker-compose (nowy serwis `db`)
-  - [ ] Połączenie app z PostgreSQL (env vars, DATABASE_URL)
-  - [ ] LeetCode
-- [ ] Dzień 19 (śr 03.06):
-  - [ ] SQLAlchemy teoria (engine/session/ORM) + notatki
-  - [ ] Naprawa bugu `asyncio.sleep(2)` w `fetch_session_with_semaphore` — sleep PRZED requestem spowalnia wszystko niepotrzebnie, przenieść PO requeście lub usunąć
-  - [ ] LeetCode
-- [ ] Dzień 20 (czw 04.06):
+- [x] Dzień 18 (śr 03.06, BEZ CZASU):
+  - [x] Wszystkie zadania przesunięte na czw-sob
+- [x] Dzień 19 (śr 03.06):
+  - [x] Wszystkie zadania przesunięte na czw-sob
+- [ ] Dzień 20 (czw 04.06, 5h):
+  - [ ] Walidacja `year` w endpointach `/results/{year}/{country}/` i `/drivers/` — 2023 <= year <= CURRENT_YEAR, poza → 422
+  - [ ] PostgreSQL w docker-compose 
+  - [ ] Połączenie app z PostgreSQL 
+  - [ ] SQLAlchemy teoria (engine/session/ORM)
+  - [ ] LeetCode 1 zadanie
+- [ ] Dzień 21 (pt 05.06, 5h):
+  - [ ] Bugfix `asyncio.sleep(2)` w `fetch_session_with_semaphore` 
   - [ ] Pierwszy model ORM (tabela `standings`)
-  - [ ] LeetCode
-- [ ] Dzień 21 (pt 05.06):
-  - [ ] Zapis standings do PostgreSQL zamiast cache plikowego JSON
-  - [ ] LeetCode
-- [ ] Dzień 22 (sob 06.06):
-  - [ ] Alembic — teoria + pierwsza migracja
-  - [ ] Testy dla `get_races_and_sprints` edge case: rok bez sprintów (np. 2019) → sprint_keys = []
-  - [ ] LeetCode
+  - [ ] Start: zapis standings do Postgres 
+  - [ ] LeetCode 1 zadanie
+- [ ] Dzień 22 (sob 06.06, 5h):
+  - [ ] Zapis standings do PostgreSQL zamiast cache plikowego JSON 
+  - [ ] Alembic — teoria
+  - [ ] Testy dla `get_races_and_sprints` edge case: rok bez sprintów (np. 2019) → sprint_keys = [] 
+  - [ ] LeetCode 1 zadanie
 - [ ] Dzień 23 (niedz 07.06, LEKKO):
-  - [ ] Refleksja + learning_notes.md
-
+  - [ ] Refleksja + learning_notes.md update
+  - [ ] Bufor na rzeczy które się rozjechały z czw-sob
 -----
 
 ### Tydzień 4 (Dzień 24-30): PostgreSQL koniec + WOW feature (porównywarka kierowców)
