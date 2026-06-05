@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Path
+from contextlib import asynccontextmanager
 
 from schemas import ConstructorEntry, Driver, RaceResult, StandingsEntry
 from services import (
@@ -9,8 +10,18 @@ from services import (
     get_driver_standings,
     get_race_results,
 )
+from database import engine, Base
+import models
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    yield
+    await engine.dispose()
+
+
+app = FastAPI(lifespan=lifespan)
 
 
 @app.get("/")
