@@ -47,15 +47,15 @@ Start: 2026-05-16
   - [x] Wszystkie zadania przesunięte na czw-sob
 - [x] Dzień 19 (śr 03.06):
   - [x] Wszystkie zadania przesunięte na czw-sob
-- [ ] Dzień 20 (czw 04.06, 5h):
-  - [ ] Walidacja `year` w endpointach `/results/{year}/{country}/` i `/drivers/` — 2023 <= year <= CURRENT_YEAR, poza → 422
-  - [ ] PostgreSQL w docker-compose 
-  - [ ] Połączenie app z PostgreSQL 
-  - [ ] SQLAlchemy teoria (engine/session/ORM)
-  - [ ] LeetCode 1 zadanie
+- [x] Dzień 20 (czw 04.06, 5h):
+  - [x] Walidacja `year` w endpointach `/results/{year}/{country}/` i `/drivers/` — 2023 <= year <= CURRENT_YEAR, poza → 422
+  - [x] PostgreSQL w docker-compose 
+  - [x] Połączenie app z PostgreSQL 
+  - [x] SQLAlchemy teoria (engine/session/ORM)
+  - [x] LeetCode 1 zadanie
 - [ ] Dzień 21 (pt 05.06, 5h):
-  - [ ] Bugfix `asyncio.sleep(2)` w `fetch_session_with_semaphore` 
-  - [ ] Pierwszy model ORM (tabela `standings`)
+  - [x] Bugfix `asyncio.sleep(2)` w `fetch_session_with_semaphore` 
+  - [x] Pierwszy model ORM (tabela `standings`)
   - [ ] Start: zapis standings do Postgres 
   - [ ] LeetCode 1 zadanie
 - [ ] Dzień 22 (sob 06.06, 5h):
