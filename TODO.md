@@ -53,11 +53,11 @@ Start: 2026-05-16
   - [x] Połączenie app z PostgreSQL 
   - [x] SQLAlchemy teoria (engine/session/ORM)
   - [x] LeetCode 1 zadanie
-- [ ] Dzień 21 (pt 05.06, 5h):
+- [x] Dzień 21 (pt 05.06, 5h):
   - [x] Bugfix `asyncio.sleep(2)` w `fetch_session_with_semaphore` 
   - [x] Pierwszy model ORM (tabela `standings`)
-  - [ ] Start: zapis standings do Postgres 
-  - [ ] LeetCode 1 zadanie
+  - [x] Start: zapis standings do Postgres 
+  - [x] LeetCode 1 zadanie
 - [ ] Dzień 22 (sob 06.06, 5h):
   - [ ] Zapis standings do PostgreSQL zamiast cache plikowego JSON 
   - [ ] Alembic — teoria
