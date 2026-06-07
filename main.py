@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, Path
+from fastapi import FastAPI, Path, Depends
 from contextlib import asynccontextmanager
 
 from schemas import ConstructorEntry, Driver, RaceResult, StandingsEntry
@@ -10,7 +10,9 @@ from services import (
     get_driver_standings,
     get_race_results,
 )
-from database import engine, Base
+from database import engine, Base, get_db
+from sqlalchemy.ext.asyncio import AsyncSession
+
 import models
 
 @asynccontextmanager
@@ -53,9 +55,10 @@ async def standings_endpoint(
     year: int = Path(
         ..., ge=2023, le=CURRENT_YEAR,
         description=f"Rok musi być pomiędzy 2023 a {CURRENT_YEAR}"
-        )
+        ),
+    session: AsyncSession = Depends(get_db)
     ):
-    return await get_driver_standings(year)
+    return await get_driver_standings(year, session)
 
 
 
