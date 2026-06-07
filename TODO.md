@@ -58,14 +58,12 @@ Start: 2026-05-16
   - [x] Pierwszy model ORM (tabela `standings`)
   - [x] Start: zapis standings do Postgres 
   - [x] LeetCode 1 zadanie
-- [ ] Dzień 22 (sob 06.06, 5h):
-  - [ ] Zapis standings do PostgreSQL zamiast cache plikowego JSON 
+- [x] Dzień 22 (sob 06.06, 5h):
+  - [x] Zapis standings do PostgreSQL zamiast cache plikowego JSON 
   - [ ] Alembic — teoria
   - [ ] Testy dla `get_races_and_sprints` edge case: rok bez sprintów (np. 2019) → sprint_keys = [] 
-  - [ ] LeetCode 1 zadanie
-- [ ] Dzień 23 (niedz 07.06, LEKKO):
-  - [ ] Refleksja + learning_notes.md update
-  - [ ] Bufor na rzeczy które się rozjechały z czw-sob
+- [x] Dzień 23 (niedz 07.06, LEKKO):
+  - [x] Bufor na rzeczy które się rozjechały z czw-sob
 -----
 
 ### Tydzień 4 (Dzień 24-30): PostgreSQL koniec + WOW feature (porównywarka kierowców)
