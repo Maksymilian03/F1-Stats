@@ -1,15 +1,13 @@
 import asyncio
 import datetime
-import os
-import json
-import time
 from typing import cast
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import delete, select, func
-from models import DriverStanding, ConstructorStanding
 
 import httpx
 from fastapi import HTTPException
+from sqlalchemy import delete, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from models import ConstructorStanding, DriverStanding
 
 RACE_POINTS = {
     1: 25,
@@ -337,7 +335,9 @@ async def load_standings_from_db(
     year: int,
     session: AsyncSession,
     ) -> list[dict]:
-    stmt = select(DriverStanding).where(DriverStanding.year == year).order_by(DriverStanding.position)
+    stmt = select(DriverStanding).where(
+        DriverStanding.year == year).order_by(
+        DriverStanding.position)
     result = await session.execute(stmt)
     standings = result.scalars().all()
     return [
@@ -366,7 +366,7 @@ async def is_db_data_fresh(
 
     if year < CURRENT_YEAR:
         return True
-    
+
     return (datetime.datetime.now() - latest_update).total_seconds() < CACHE_TTL_SECONDS
 
 
@@ -394,7 +394,9 @@ async def load_constructor_standings_from_db(
     year: int,
     session: AsyncSession,
     ) -> list[dict]:
-    stmt = select(ConstructorStanding).where(ConstructorStanding.year == year).order_by(ConstructorStanding.position)
+    stmt = select(ConstructorStanding).where(
+        ConstructorStanding.year == year).order_by(
+        ConstructorStanding.position)
     result = await session.execute(stmt)
     standings = result.scalars().all()
     return [

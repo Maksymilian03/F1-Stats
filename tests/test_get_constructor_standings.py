@@ -1,4 +1,4 @@
-from unittest.mock import patch, AsyncMock
+from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
@@ -76,7 +76,7 @@ async def test_get_constructor_standings_calculates_total_points_correctly(drive
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_wins(drivers_mock, session_mock, races_and_sprints_mock,
-    save_constructor_standings_mock, is_constructor_db_fresh_mock, fake_drivers, fake_sprints_results, fake_races_results, 
+    save_constructor_standings_mock, is_constructor_db_fresh_mock, fake_drivers, fake_sprints_results, fake_races_results,
     fake_race_keys, fake_sprint_keys, mock_session):
 
     # Arrange

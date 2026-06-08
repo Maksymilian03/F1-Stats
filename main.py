@@ -1,7 +1,10 @@
-
-from fastapi import FastAPI, Path, Depends
 from contextlib import asynccontextmanager
+from typing import Annotated
 
+from fastapi import Depends, FastAPI, Path
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database import Base, engine, get_db
 from schemas import ConstructorEntry, Driver, RaceResult, StandingsEntry
 from services import (
     CURRENT_YEAR,
@@ -10,10 +13,7 @@ from services import (
     get_driver_standings,
     get_race_results,
 )
-from database import engine, Base, get_db
-from sqlalchemy.ext.asyncio import AsyncSession
 
-import models
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -45,9 +45,14 @@ async def race_results_endpoint(
     return await get_race_results(year, country)
 
 
+SessionDep = Annotated[AsyncSession, Depends(get_db)]
+
 @app.get('/standings/constructors/{year}/', response_model=list[ConstructorEntry])
-async def constructor_standings_endpoint(year: int = Path(..., ge=2023, le=CURRENT_YEAR)):
-    return await get_constructor_standings(year)
+async def constructor_standings_endpoint(
+    year: int = Path(
+        ..., ge=2023, le=CURRENT_YEAR),
+    session: SessionDep = None):
+    return await get_constructor_standings(year, session)
 
 
 @app.get('/standings/{year}/', response_model=list[StandingsEntry])
@@ -56,10 +61,6 @@ async def standings_endpoint(
         ..., ge=2023, le=CURRENT_YEAR,
         description=f"Rok musi być pomiędzy 2023 a {CURRENT_YEAR}"
         ),
-    session: AsyncSession = Depends(get_db)
+    session: SessionDep = None
     ):
     return await get_driver_standings(year, session)
-
-
-
-

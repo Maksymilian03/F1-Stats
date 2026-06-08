@@ -4,7 +4,7 @@ from sqlalchemy import String, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column
 
 from database import Base
- 
+
 
 class DriverStanding(Base):
     __tablename__ = "driver_standings"
