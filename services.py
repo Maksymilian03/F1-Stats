@@ -6,7 +6,7 @@ import time
 from typing import cast
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import delete, select, func
-from models import DriverStanding
+from models import DriverStanding, ConstructorStanding
 
 import httpx
 from fastapi import HTTPException
@@ -265,21 +265,14 @@ async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
 
 
 
-async def get_constructor_standings(year: int) -> list[dict]:
+async def get_constructor_standings(year: int, session: AsyncSession) -> list[dict]:
     """
     Funkcja zwroci klasyfikacje konstruktorów w danym sezonie
     """
-    # Odczyt z cache
-    cache_path = os.path.join(CACHE_DIR, f'constructor_standings_{year}.json')
-    if os.path.exists(cache_path):
-        if year < datetime.datetime.now().year:
-            with open(cache_path) as f:
-                return cast(list[dict], json.load(f))
-        elif year == datetime.datetime.now().year:
-            cache_mtime = os.path.getmtime(cache_path)
-            if time.time() - cache_mtime < CACHE_TTL_SECONDS:
-                with open(cache_path) as f:
-                    return cast(list[dict], json.load(f))
+    # Odczyt z db
+    if await is_constructor_db_data_fresh(year, session):
+        return await load_constructor_standings_from_db(year, session)
+
 
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
@@ -312,10 +305,8 @@ async def get_constructor_standings(year: int) -> list[dict]:
 
     result = leaderboard(teams)
 
-    # Zapis do cache
-    os.makedirs(CACHE_DIR, exist_ok=True)
-    with open(cache_path, 'w') as f:
-        json.dump(result, f)
+    # Zapis do db
+    await save_constructor_standings_to_db(year, result, session)
 
     return result
 
@@ -334,7 +325,7 @@ async def save_standings_to_db(
             position=entry['position'],
             driver_number=entry['driver_number'],
             full_name=entry['full_name'],
-            team_name=entry.get('team'),
+            team=entry.get('team'),
             points=entry['points'],
             wins=entry['wins']
         )
@@ -354,7 +345,7 @@ async def load_standings_from_db(
             'position': standing.position,
             'driver_number': standing.driver_number,
             'full_name': standing.full_name,
-            'team': standing.team_name,
+            'team': standing.team,
             'points': standing.points,
             'wins': standing.wins
         }
@@ -376,4 +367,56 @@ async def is_db_data_fresh(
     if year < CURRENT_YEAR:
         return True
     
+    return (datetime.datetime.now() - latest_update).total_seconds() < CACHE_TTL_SECONDS
+
+
+async def save_constructor_standings_to_db(
+    year: int,
+    standings: list[dict],
+    session: AsyncSession,
+    ) -> None:
+    stmt = delete(ConstructorStanding).where(ConstructorStanding.year == year)
+    await session.execute(stmt)
+
+    for entry in standings:
+        constructor_standing = ConstructorStanding(
+            year=year,
+            position=entry['position'],
+            team=entry['team'],
+            points=entry['points'],
+            wins=entry['wins']
+        )
+        session.add(constructor_standing)
+    await session.commit()
+
+
+async def load_constructor_standings_from_db(
+    year: int,
+    session: AsyncSession,
+    ) -> list[dict]:
+    stmt = select(ConstructorStanding).where(ConstructorStanding.year == year).order_by(ConstructorStanding.position)
+    result = await session.execute(stmt)
+    standings = result.scalars().all()
+    return [
+        {
+            'position': standing.position,
+            'team': standing.team,
+            'points': standing.points,
+            'wins': standing.wins
+        }
+        for standing in standings
+    ]
+
+
+async def is_constructor_db_data_fresh(
+    year: int,
+    session: AsyncSession,
+    ) -> bool:
+    stmt = select(func.max(ConstructorStanding.updated_at)).where(ConstructorStanding.year == year)
+    result = await session.execute(stmt)
+    latest_update = result.scalar()
+    if latest_update is None:
+        return False
+    if year < CURRENT_YEAR:
+        return True
     return (datetime.datetime.now() - latest_update).total_seconds() < CACHE_TTL_SECONDS
