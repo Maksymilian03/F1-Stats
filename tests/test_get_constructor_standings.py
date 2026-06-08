@@ -1,4 +1,4 @@
-from unittest.mock import patch
+from unittest.mock import patch, AsyncMock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -8,21 +8,24 @@ from services import CURRENT_YEAR, get_constructor_standings
 
 
 @pytest.mark.asyncio
+@patch('services.save_constructor_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_constructor_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_returns_correct_position(drivers_mock, session_mock, races_and_sprints_mock,
-     tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
+    save_constructor_standings_mock, is_constructor_db_fresh_mock,
+    fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys, mock_session):
 
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
 
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
     session_mock.side_effect = fake_races_results + fake_sprints_results
 
     # Act
-    result = await get_constructor_standings(2023)
+    result = await get_constructor_standings(2023, session=mock_session)
 
     # Assert
     assert result[0]['team'] == "Red Bull"
@@ -30,21 +33,24 @@ async def test_get_constructor_standings_returns_correct_position(drivers_mock, 
     assert result[2]['team'] == "Ferrari"
 
 @pytest.mark.asyncio
+@patch('services.save_constructor_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_constructor_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_calculates_total_points_correctly(drivers_mock, session_mock, races_and_sprints_mock,
-         tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
+        save_constructor_standings_mock, is_constructor_db_fresh_mock, fake_drivers,
+        fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys, mock_session):
 
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
 
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
     session_mock.side_effect = fake_races_results + fake_sprints_results
 
     # Act
-    result = await get_constructor_standings(2023)
+    result = await get_constructor_standings(2023, session=mock_session)
 
     # Assert
     max_verstappen_points = (25 + 18 + 25 + 8 + 7 + 7)
@@ -64,21 +70,22 @@ async def test_get_constructor_standings_calculates_total_points_correctly(drive
     assert result[2]['points'] == ferrari_points
 
 @pytest.mark.asyncio
+@patch('services.save_constructor_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_constructor_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
 async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_wins(drivers_mock, session_mock, races_and_sprints_mock,
-         tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
+    save_constructor_standings_mock, is_constructor_db_fresh_mock, fake_drivers, fake_sprints_results, fake_races_results, 
+    fake_race_keys, fake_sprint_keys, mock_session):
 
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
-
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
     session_mock.side_effect = fake_races_results + fake_sprints_results
 
     # Act
-    result = await get_constructor_standings(2023)
+    result = await get_constructor_standings(2023, session=mock_session)
 
     # Assert
 
@@ -100,16 +107,16 @@ async def test_get_constructor_standings_does_not_count_sprint_wins_as_total_win
 
 
 @pytest.mark.asyncio
+@patch('services.is_constructor_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
-async def test_get_constructor_standings_returns_empty_list_when_no_races_or_sprints(races_and_sprints_mock,
-                                                                                      tmp_path, monkeypatch):
+async def test_get_constructor_standings_returns_empty_list_when_no_races_or_sprints(races_and_sprints_mock, is_constructor_db_fresh_mock, mock_session):
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
 
     races_and_sprints_mock.return_value = ([], [])
 
     # Act
-    result = await get_constructor_standings(2026)
+    result = await get_constructor_standings(2026, session=mock_session)
 
     # Assert
     assert result == []
