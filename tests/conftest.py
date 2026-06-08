@@ -1,5 +1,5 @@
 import pytest
-
+from unittest.mock import AsyncMock
 
 @pytest.fixture
 def fake_drivers():
@@ -87,3 +87,8 @@ def fake_cached_data():
         {"driver_number": 44, "full_name": "Lewis Hamilton", "points": 90, "wins": 4},
         {"driver_number": 16, "full_name": "Charles Leclerc", "points": 80, "wins": 3},
     ]
+
+
+@pytest.fixture
+def mock_session():
+    return AsyncMock()

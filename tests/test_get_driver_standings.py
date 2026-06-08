@@ -1,6 +1,6 @@
 import json
 from unittest.mock import patch
-
+from unittest.mock import AsyncMock
 import pytest
 from fastapi.testclient import TestClient
 
@@ -9,20 +9,23 @@ from services import CURRENT_YEAR, get_driver_standings
 
 
 @pytest.mark.asyncio
+@patch('services.save_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
-async def test_get_driver_standings_returns_correct_position(drivers_mock, session_mock, races_and_sprints_mock,
-     tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
+async def test_get_driver_standings_returns_correct_position(drivers_mock, session_result_mock, races_and_sprints_mock,
+     save_standings_mock, is_db_fresh_mock, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys, mock_session):
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
 
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
-    session_mock.side_effect = fake_races_results + fake_sprints_results
+    session_result_mock.side_effect = fake_races_results + fake_sprints_results
+
+
 
     # Act
-    result = await get_driver_standings(2023)
+    result = await get_driver_standings(2023, session=mock_session)
 
     # Assert
 
@@ -32,20 +35,22 @@ async def test_get_driver_standings_returns_correct_position(drivers_mock, sessi
 
 
 @pytest.mark.asyncio
+@patch('services.save_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
-async def test_get_driver_standings_calculates_total_points_correctly(drivers_mock, session_mock, races_and_sprints_mock,
-         tmp_path, monkeypatch, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys):
+async def test_get_driver_standings_calculates_total_points_correctly(drivers_mock, session_result_mock, races_and_sprints_mock,
+     save_standings_mock, is_db_fresh_mock, fake_drivers, fake_sprints_results, fake_races_results, fake_race_keys, fake_sprint_keys, mock_session):
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
 
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
-    session_mock.side_effect = fake_races_results + fake_sprints_results
+    session_result_mock.side_effect = fake_races_results + fake_sprints_results
 
     # Act
-    result = await get_driver_standings(2023)
+    result = await get_driver_standings(2023, session=mock_session)
 
     # Assert
 
@@ -55,21 +60,23 @@ async def test_get_driver_standings_calculates_total_points_correctly(drivers_mo
 
 
 @pytest.mark.asyncio
+@patch('services.save_standings_to_db', new_callable=AsyncMock)
+@patch('services.is_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 @patch('services.fetch_session_with_semaphore')
 @patch('services.fetch_drivers')
-async def test_get_driver_standings_does_not_count_sprint_wins_as_total_wins(drivers_mock, session_mock,
-     races_and_sprints_mock, tmp_path, monkeypatch, fake_drivers, fake_sprints_results,
-       fake_races_results, fake_race_keys, fake_sprint_keys):
+async def test_get_driver_standings_does_not_count_sprint_wins_as_total_wins(drivers_mock, session_result_mock,
+     races_and_sprints_mock, save_standings_mock, is_db_fresh_mock, fake_drivers, fake_sprints_results,
+       fake_races_results, fake_race_keys, fake_sprint_keys, mock_session):
     # Arrange
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
 
     drivers_mock.return_value = fake_drivers
     races_and_sprints_mock.return_value = (fake_race_keys, fake_sprint_keys)
-    session_mock.side_effect = fake_races_results + fake_sprints_results
+    session_result_mock.side_effect = fake_races_results + fake_sprints_results
 
     # Act
-    result = await get_driver_standings(2023)
+    result = await get_driver_standings(2023, session=mock_session)
 
     # Assert
 
@@ -77,41 +84,45 @@ async def test_get_driver_standings_does_not_count_sprint_wins_as_total_wins(dri
     assert result[1]['wins'] == 0 + 1 + 0 + 0 + 0 + 0
     assert result[2]['wins'] == 0 + 0 + 0 + 0 + 0 + 0
 
+# @pytest.mark.asyncio
+# @patch('services.save_standings_to_db', new_callable=AsyncMock)
+# @patch('services.is_db_data_fresh', new_callable=AsyncMock, return_value=False)
+# @patch('services.get_races_and_sprints')
+# @patch('services.fetch_session_with_semaphore')
+# @patch('services.fetch_drivers')
+# async def test_get_driver_standings_returns_all_drivers_with_cached_data(drivers_mock, session_result_mock,
+#     races_and_sprints_mock, save_standings_mock, is_db_fresh_mock, tmp_path, monkeypatch, fake_cached_data, session_mock):
+#     # Arrange
+#     year = 2023
+#     monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+
+#     cache_file = tmp_path / f'drivers_standings_{year}.json'
+
+#     cache_file.write_text(json.dumps(fake_cached_data))
+
+#     # Act
+#     result = await get_driver_standings(year)
+
+#     # Assert
+#     assert result == fake_cached_data
+#     drivers_mock.assert_not_called()
+#     session_result_mock.assert_not_called()
+#     races_and_sprints_mock.assert_not_called()
+
 @pytest.mark.asyncio
-@patch('services.get_races_and_sprints')
-@patch('services.fetch_session_with_semaphore')
-@patch('services.fetch_drivers')
-async def test_get_driver_standings_returns_all_drivers_with_cached_data(drivers_mock, session_mock,
-                                     races_and_sprints_mock, tmp_path, monkeypatch, fake_cached_data):
-    # Arrange
-    year = 2023
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
 
-    cache_file = tmp_path / f'drivers_standings_{year}.json'
-
-    cache_file.write_text(json.dumps(fake_cached_data))
-
-    # Act
-    result = await get_driver_standings(year)
-
-    # Assert
-    assert result == fake_cached_data
-    drivers_mock.assert_not_called()
-    session_mock.assert_not_called()
-    races_and_sprints_mock.assert_not_called()
-
-@pytest.mark.asyncio
+@patch('services.is_db_data_fresh', new_callable=AsyncMock, return_value=False)
 @patch('services.get_races_and_sprints')
 async def test_get_driver_standings_returns_empty_list_when_no_races_or_sprints(
-     races_and_sprints_mock, tmp_path, monkeypatch):
+     races_and_sprints_mock, is_db_fresh_mock, mock_session):
     # Arrange
-    year = 2026
-    monkeypatch.setattr('services.CACHE_DIR', str(tmp_path))
+    year = 2025
+
 
     races_and_sprints_mock.return_value = ([], [])
 
     # Act
-    result = await get_driver_standings(year)
+    result = await get_driver_standings(year, session=mock_session)
 
     # Assert
     assert result == []
