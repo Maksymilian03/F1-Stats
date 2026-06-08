@@ -1,5 +1,4 @@
 from contextlib import asynccontextmanager
-from typing import Annotated
 
 from fastapi import Depends, FastAPI, Path
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -45,13 +44,11 @@ async def race_results_endpoint(
     return await get_race_results(year, country)
 
 
-SessionDep = Annotated[AsyncSession, Depends(get_db)]
-
 @app.get('/standings/constructors/{year}/', response_model=list[ConstructorEntry])
 async def constructor_standings_endpoint(
     year: int = Path(
         ..., ge=2023, le=CURRENT_YEAR),
-    session: SessionDep = None):
+      session: AsyncSession = Depends(get_db)): # noqa B008
     return await get_constructor_standings(year, session)
 
 
@@ -61,6 +58,6 @@ async def standings_endpoint(
         ..., ge=2023, le=CURRENT_YEAR,
         description=f"Rok musi być pomiędzy 2023 a {CURRENT_YEAR}"
         ),
-    session: SessionDep = None
+    session: AsyncSession = Depends(get_db) # noqa B008
     ):
     return await get_driver_standings(year, session)
