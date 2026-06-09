@@ -48,8 +48,8 @@ async def _fetch_openf1(url: str, not_found_message: str) -> list | dict:
 
             if response.status_code == 404:
                 return []
-            
-            
+
+
             response.raise_for_status()
             data = response.json()
             if isinstance(data, dict) and "detail" in data:
