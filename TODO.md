@@ -60,8 +60,7 @@ Start: 2026-05-16
   - [x] LeetCode 1 zadanie
 - [x] Dzień 22 (sob 06.06, 5h):
   - [x] Zapis standings do PostgreSQL zamiast cache plikowego JSON 
-  - [ ] Alembic — teoria
-  - [ ] Testy dla `get_races_and_sprints` edge case: rok bez sprintów (np. 2019) → sprint_keys = [] 
+  - [x] Alembic — teoria
 - [x] Dzień 23 (niedz 07.06, LEKKO):
   - [x] Bufor na rzeczy które się rozjechały z czw-sob
 -----
@@ -72,10 +71,9 @@ Start: 2026-05-16
   - [ ] Odczyt standings z DB w endpointach
   - [ ] Testy integracyjne dla nowych endpointów (TestClient)
   - [ ] LeetCode
-- [ ] Dzień 25 (wt 09.06):
-  - [ ] Usunięcie starego cache plikowego + sprzątanie
-  - [ ] Upewnij się że wszystkie testy nadal zielone po usunięciu cache
-  - [ ] LeetCode
+- [x] Dzień 25 (wt 09.06):
+  - [x] Usunięcie starego cache plikowego + sprzątanie
+  - [x] Upewnij się że wszystkie testy nadal zielone po usunięciu cache
 - [ ] Dzień 26 (śr 10.06):
   - [ ] Design `/compare/` endpoint — Pydantic schema (co przyjmuje, co zwraca)
   - [ ] Narysuj na kartce: jak porównujesz dwóch kierowców? Jakie dane? Jakie metryki?
