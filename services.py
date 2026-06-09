@@ -34,8 +34,6 @@ SPRINT_POINTS = {
 }
 
 CURRENT_YEAR = datetime.datetime.now().year
-
-CACHE_DIR = 'cache'
 CACHE_TTL_SECONDS = 3600
 
 
@@ -45,10 +43,16 @@ async def _fetch_openf1(url: str, not_found_message: str) -> list | dict:
     """
     try:
         async with httpx.AsyncClient() as client:
+
             response = await client.get(url)
+
+            if response.status_code == 404:
+                return []
+            
+            
             response.raise_for_status()
             data = response.json()
-            if isinstance(data, dict) and 'detail' in data:
+            if isinstance(data, dict) and "detail" in data:
                 raise HTTPException(status_code=404, detail=not_found_message)
             return cast(list | dict, data)
 
