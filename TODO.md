@@ -67,14 +67,15 @@ Start: 2026-05-16
 
 ### Tydzień 4 (Dzień 24-30): PostgreSQL koniec + WOW feature (porównywarka kierowców)
 
-- [ ] Dzień 24 (pon 08.06):
-  - [ ] Odczyt standings z DB w endpointach
+- [x] Dzień 24 (pon 08.06):
+  - [x] Odczyt standings z DB w endpointach
   - [ ] Testy integracyjne dla nowych endpointów (TestClient)
-  - [ ] LeetCode
+  - [x] LeetCode
 - [x] Dzień 25 (wt 09.06):
   - [x] Usunięcie starego cache plikowego + sprzątanie
   - [x] Upewnij się że wszystkie testy nadal zielone po usunięciu cache
 - [ ] Dzień 26 (śr 10.06):
+  - [x] Rozwiązanie zadania rekrutacyjnego - początek 
   - [ ] Design `/compare/` endpoint — Pydantic schema (co przyjmuje, co zwraca)
   - [ ] Narysuj na kartce: jak porównujesz dwóch kierowców? Jakie dane? Jakie metryki?
   - [ ] LeetCode
