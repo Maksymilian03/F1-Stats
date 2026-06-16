@@ -8,6 +8,9 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from database import Base, get_db
 from main import app
+from dotenv import load_dotenv
+   
+load_dotenv()
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql://placeholder:placeholder@localhost:5432/placeholder")
 TEST_DATABASE_URL = TEST_DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
