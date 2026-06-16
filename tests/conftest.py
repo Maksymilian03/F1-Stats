@@ -2,14 +2,14 @@ import os
 from unittest.mock import AsyncMock
 
 import pytest
+from dotenv import load_dotenv
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from database import Base, get_db
 from main import app
-from dotenv import load_dotenv
-   
+
 load_dotenv()
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL", "postgresql://placeholder:placeholder@localhost:5432/placeholder")
