@@ -18,12 +18,12 @@ TEST_DATABASE_URL = TEST_DATABASE_URL.replace("postgresql://", "postgresql+async
 @pytest.fixture
 def fake_drivers():
     return {
-        44: {"driver_number": 44, "full_name": "Lewis Hamilton", "team": "Mercedes"},
-        3: {"driver_number": 3, "full_name": "Max Verstappen", "team": "Red Bull"},
-        16: {"driver_number": 16, "full_name": "Charles Leclerc", "team": "Ferrari"},
-        6: {"driver_number": 6, "full_name": "Sergio Perez", "team": "Red Bull"},
-        45: {"driver_number": 45, "full_name": "Carlos Sainz", "team": "Ferrari"},
-        77: {"driver_number": 77, "full_name": "Valtteri Bottas", "team": "Mercedes"},
+        44: {"driver_number": 44, "full_name": "Lewis Hamilton", "team_name": "Mercedes"},
+        3: {"driver_number": 3, "full_name": "Max Verstappen", "team_name": "Red Bull"},
+        16: {"driver_number": 16, "full_name": "Charles Leclerc", "team_name": "Ferrari"},
+        6: {"driver_number": 6, "full_name": "Sergio Perez", "team_name": "Red Bull"},
+        45: {"driver_number": 45, "full_name": "Carlos Sainz", "team_name": "Ferrari"},
+        77: {"driver_number": 77, "full_name": "Valtteri Bottas", "team_name": "Mercedes"},
     }
 
 @pytest.fixture
