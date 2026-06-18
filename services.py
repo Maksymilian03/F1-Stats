@@ -1,14 +1,15 @@
 import asyncio
 import datetime
-from typing import cast
 from math import abs
+from typing import cast
+
 import httpx
 from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import ConstructorStanding, DriverStanding
-from schemas import DriverStandingInfo, CompareResponse, Comparison
+from schemas import Comparison, DriverStandingInfo
 
 RACE_POINTS = {
     1: 25,
