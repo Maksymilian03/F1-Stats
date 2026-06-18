@@ -1,4 +1,4 @@
-
+from typing import Literal
 from pydantic import BaseModel
 
 
@@ -36,5 +36,28 @@ class ConstructorEntry(BaseModel):
     team: str
     points: int
     wins: int
+
+
+class DriverStandingInfo(BaseModel):
+    position: int
+    full_name: str
+    driver_number: int
+    team: str | None = None
+    points: int
+    wins: int
+
+
+class Comparison(BaseModel):
+    points_difference: int
+    wins_difference: int
+    position_difference: int
+    leader: DriverStandingInfo | Literal["draw"]
+
+
+class CompareResponse(BaseModel):
+    driver1: DriverStandingInfo
+    driver2: DriverStandingInfo
+    comparison: Comparison
+
 
 
