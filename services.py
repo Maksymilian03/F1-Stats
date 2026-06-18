@@ -1,13 +1,14 @@
 import asyncio
 import datetime
 from typing import cast
-
+from math import abs
 import httpx
 from fastapi import HTTPException
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import ConstructorStanding, DriverStanding
+from schemas import DriverStandingInfo, CompareResponse, Comparison
 
 RACE_POINTS = {
     1: 25,
@@ -426,3 +427,29 @@ async def is_constructor_db_data_fresh(
     if year < CURRENT_YEAR:
         return True
     return (datetime.datetime.now() - latest_update).total_seconds() < CACHE_TTL_SECONDS
+
+
+def calculate_comparison(
+        driver1: DriverStandingInfo,
+        driver2: DriverStandingInfo
+) -> Comparison:
+    points_difference = abs(driver1.points - driver2.points)
+    wins_difference = abs(driver1.wins - driver2.wins)
+    position_difference = abs(driver1.position - driver2.position)
+
+    driver1_stats = (driver1.points, driver1.wins)
+    driver2_stats = (driver2.points, driver2.wins)
+
+    if driver1_stats == driver2_stats:
+        leader = "draw"
+    elif driver1_stats > driver2_stats:
+        leader = driver1
+    else:
+        leader = driver2
+
+    return Comparison(
+        points_difference=points_difference,
+        wins_difference=wins_difference,
+        position_difference=position_difference,
+        leader=leader
+    )
