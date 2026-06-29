@@ -1,148 +1,126 @@
 # F1-Stats — TODO
 
-## 100 Days of Code Challenge
+Projekt zacząłem 16.05.2026 jako 100 Days of Code Challenge.
+Doszedłem do Dnia 30, potem zrobiłem chwile przerwy żeby przygotować się do rozmowy rekrutacyjnej. 100 dni już nie wyjdzie, ale projekt robię dalej.
 
-Start: 2026-05-16
-
----
-
-### Tydzień 1 (Dzień 3-9): Roadmap + dokończenie testów
-
-- [x] Dzień 3 (pon 18.05): Aktualizacja TODO.md + sekcja Roadmap w README + LeetCode
-- [x] Dzień 4 (wt 19.05): Test happy path fetch_session_results + LeetCode
-- [x] Dzień 5 (śr 20.05): Test get_races_and_sprints + LeetCode
-- [x] Dzień 6 (czw 21.05): Test get_driver_standings (3 focused + cache hit) + LeetCode #345
-- [x] Dzień 7 (pt 22.05): Refactor — fixtures do conftest.py + LeetCode
-- [x] Dzień 8 (sob 23.05): Docker teoria + learning_notes.md + LeetCode
-- [x] Dzień 9 (niedz 24.05, LEKKO): Update README test count + przegląd tygodnia
+Wracam do pracy nad projektem 29.06.2026.
 
 ---
 
-### Tydzień 2 (Dzień 10-16): Docker + CI/CD
+## Co już zrobione
 
-- [x] Dzień 10 (pon 25.05): Dockerfile + split requirements prod/dev + .dockerignore + LeetCode
-- [x] Dzień 11 (wt 26.05): docker build lokalnie + docker run + LeetCode #334
-- [x] Dzień 12 (śr 27.05): docker-compose.yml (dev: volumes + --reload) + LeetCode #443
-- [x] Dzień 13 (czw 28.05): GitHub Actions CI workflow (pytest, on: push) + LeetCode
-- [x] Dzień 14 (pt 29.05): Bug fix race_keys[-1] w get_driver_standings + test edge case + CI badge w README
-- [x] Dzień 15 (sob 30.05): Bug fix race_keys[-1] w get_constructor_standings + 6 testów + CURRENT_YEAR → services.py + ruff + mypy w CI
-- [x] Dzień 16 (niedz 31.05, LEKKO): Refleksja tygodnia + learning_notes.md
+### Tydzień 1 (18-24.05)
+- [x] Pierwsze testy do `fetch_session_results` i `get_races_and_sprints`
+- [x] Testy do `get_driver_standings` (3 testy + cache hit)
+- [x] Refactor — fixtures do `conftest.py`
+- [x] Aktualizacja README z sekcją Roadmap
+- [x] LeetCode codziennie
 
----
+### Tydzień 2 (25-31.05)
+- [x] Dockerfile + .dockerignore + split requirements prod/dev
+- [x] docker-compose.yml z volumes i --reload dla dev
+- [x] GitHub Actions CI — pytest, ruff, mypy
+- [x] Bug fix `race_keys[-1]` IndexError w `get_driver_standings` i `get_constructor_standings`
+- [x] Refactor `CURRENT_YEAR = datetime.now().year` zamiast hardcoded `le=2025`
+- [x] CI badge w README
 
-### Tydzień 3 (Dzień 17-23): PostgreSQL — nauka + integracja
+### Tydzień 3 (01-07.06)
+- [x] Nauka SQL — SELECT, WHERE, JOIN, normalizacja
+- [x] PostgreSQL w docker-compose + połączenie z aplikacją
+- [x] SQLAlchemy teoria — engine, session, ORM
+- [x] Pierwszy model ORM (tabela standings)
+- [x] Zapis standings do PostgreSQL zamiast pliku JSON
+- [x] Alembic teoria + pierwsza migracja
 
-- [x] Dzień 17 (pon 01.06): SQL podstawy (SELECT/WHERE/JOIN/normalizacja) + notatki
-- [x] Dzień 18 (wt 02.06): PostgreSQL w docker-compose + połączenie z app
-- [x] Dzień 19 (śr 03.06): SQLAlchemy teoria (engine/session/ORM) + notatki
-- [x] Dzień 20 (czw 04.06): Pierwszy model ORM (tabela standings)
-- [x] Dzień 21 (pt 05.06): Zapis standings do PostgreSQL zamiast JSON
-- [x] Dzień 22 (sob 06.06): Alembic — teoria + pierwsza migracja
-- [x] Dzień 23 (niedz 07.06, LEKKO): Refleksja + learning_notes.md
+### Tydzień 4 (08-14.06)
+- [x] Odczyt standings z DB w endpointach
+- [x] Usunięcie starego cache plikowego
+- [x] Zadanie rekrutacyjne MindPal — Solar Calculator (osobne repo, submitted 13.06)
+- [x] Mid-fazy review
 
----
+### Tydzień 5 — zaczęty (15-21.06)
+- [x] 3 testy integracyjne dla `get_driver_standings` z TestClient
+- [x] Wstęp do porównywarki — schema Pydantic i `calculate_comparison` (gołe szkice)
+- [ ] Reszta tygodnia — nie zrobione, bo zacząłem przygotowania do rozmowy
 
-### Tydzień 4 (Dzień 24-30): Zadanie rekrutacyjne
-
-- [x] Dzień 24 (pon 08.06): Odczyt standings z DB w endpointach
-- [x] Dzień 25 (wt 09.06): Usunięcie starego cache plikowego + weryfikacja testów
-- [x] Dzień 26 (śr 10.06): Zadanie rekrutacyjne — analiza i pierwsza wersja
-- [x] Dzień 27 (czw 11.06): Zadanie rekrutacyjne — refactor na streaming + multi-search
-- [x] Dzień 28 (pt 12.06): Zadanie rekrutacyjne — testowanie i optymalizacja
-- [x] Dzień 29 (sob 13.06): Zadanie rekrutacyjne — finalna wersja + wysłanie
-- [x] Dzień 30 (niedz 14.06, LEKKO): Mid-Fazy 1 review — gotowość vs plan
-
----
-
-### Tydzień 5 (Dzień 31-37): WOW feature (porównywarka kierowców) + testy integracyjne
-
-- [ ] Dzień 31 (pon 15.06):
-  - [ ] Testy integracyjne dla endpointów ze standings z DB (TestClient)
-  - [ ] LeetCode
-- [ ] Dzień 32 (wt 16.06):
-  - [ ] Design `/compare/` endpoint — Pydantic schema (input/output)
-  - [ ] Szkic porównania kierowców — metryki i dane
-  - [ ] LeetCode
-- [ ] Dzień 33 (śr 17.06):
-  - [ ] Implementacja logiki porównywarki w `services.py`
-  - [ ] LeetCode
-- [ ] Dzień 34 (czw 18.06):
-  - [ ] Testy porównywarki + przypadki brzegowe (kierowca nie istnieje, różne sezony)
-  - [ ] LeetCode
-- [ ] Dzień 35 (pt 19.06):
-  - [ ] Porównywarka w README + update Roadmap
-  - [ ] LeetCode
-- [ ] Dzień 36 (sob 20.06):
-  - [ ] Dependency Injection (Depends) w FastAPI
-  - [ ] Refactor get_driver_standings i get_constructor_standings — wspólna funkcja pomocnicza
-  - [ ] LeetCode
-- [ ] Dzień 37 (niedz 21.06, LEKKO):
-  - [ ] Refleksja + learning_notes.md
+### Tydzień 6 — pominięty (22-28.06)
+Cały tydzień poszedł na przygotowania do rozmowy rekrutacyjnej. Bez commitów w F1-Stats.
 
 ---
 
-### Tydzień 6 (Dzień 38-44): Production patterns + Redis + interview prep
+## Do zrobienia teraz — porównywarka kierowców
 
-- [ ] Dzień 38 (pon 22.06):
-  - [ ] Strukturalne logowanie (structlog lub logging z JSON)
-  - [ ] LeetCode
-- [ ] Dzień 39 (wt 23.06):
-  - [ ] Middleware (request ID + timing)
-  - [ ] Error handling middleware + własne wyjątki
-  - [ ] LeetCode
-- [ ] Dzień 40 (śr 24.06):
-  - [ ] Env vars (pydantic-settings) + .env.example
-  - [ ] CACHE_DIR i CACHE_TTL_SECONDS → settings
-  - [ ] LeetCode
-- [ ] Dzień 41 (czw 25.06):
-  - [ ] Redis w docker-compose + warstwa cache
-  - [ ] Rate limiting (slowapi) + CORS
-  - [ ] LeetCode
-- [ ] Dzień 42 (pt 26.06):
-  - [ ] Paginacja + filtrowanie `/drivers/`
-  - [ ] Coverage badge w README
-  - [ ] LeetCode
-- [ ] Dzień 43 (sob 27.06):
-  - [ ] Finalny przegląd README + Roadmap
-  - [ ] Interview prep — historia "tell me about F1-Stats" (5 min)
-  - [ ] Powtórka: Python async, pytest mockowanie, Docker, SQL
-- [ ] Dzień 44 (niedz 28.06):
-  - [ ] Przegląd 6 tyg, GitHub before/after, intensyfikacja aplikacji
-  - [ ] Post na LinkedIn o F1-Stats
-  - [ ] Cel: ~80% gotowości ✅ TARGET
+Wracam do tego co zostało z Tygodnia 5.
+
+### Tydzień 5 (29.06 – 05.07)
+
+- [x] 29.06 (pon): Logika `calculate_comparison` + `load_comparison_data_from_db` + `get_comparison_drivers` skomitowana
+- [ ] 30.06 (wt): Cache miss path w `get_comparison_drivers`
+- [ ] 01.07 (śr): Walidacja `driver_number` w Path + endpoint w `main.py`
+- [ ] 02.07 (czw): Testy do `calculate_comparison` z parametrize
+- [ ] 03.07 (pt): Test integracyjny endpointu `/compare/`
+- [ ] 04.07 (sob): Update README — dokumentacja `/compare/`
+- [ ] 05.07 (niedz, LEKKO): Refleksja tygodnia + learning_notes.md
 
 ---
 
-### Znane bugi / tech debt do zaadresowania
+## Do zrobienia potem — to co miało być w Tygodniu 6
 
-- [ ] DRY violation: `get_driver_standings` i `get_constructor_standings` — wyciągnąć wspólną funkcję pomocniczą (Dzień 36)
-- [ ] Brak testów edge case dla roku bez sprintów (sprint_keys = [])
+### Tydzień 6 (06-12.07)
+
+- [ ] 06.07 (pon): Refactor DRY — wspólna funkcja dla `get_driver_standings` i `get_constructor_standings`
+- [ ] 07.07 (wt): Strukturalne logowanie (structlog)
+- [ ] 08.07 (śr): Middleware — request ID + timing
+- [ ] 09.07 (czw): Error handling middleware + custom exceptions
+- [ ] 10.07 (pt): Env vars — `pydantic-settings` + `.env.example`
+- [ ] 11.07 (sob): Redis w docker-compose + warstwa cache
+- [ ] 12.07 (niedz, LEKKO): Refleksja
+
+### Tydzień 7 (13-19.07)
+
+- [ ] Rate limiting (slowapi)
+- [ ] CORS middleware
+- [ ] Paginacja + filtrowanie dla `/drivers/`
+- [ ] Coverage badge w README
+- [ ] Finalny przegląd README + Roadmap
 
 ---
 
-### Tydzień 7-8: JWT Auth
+## Pomysły na później (bez deadline'u)
 
-- [ ] User model + rejestracja/login
-- [ ] JWT tokeny + protected endpointy
-- [ ] Testy autoryzacji
+### Quality
+- [ ] Property-based testing (Hypothesis) dla `calculate_comparison`
+- [ ] Branch coverage zamiast line coverage w CI
+- [ ] Alembic migrations zamiast `create_all` w lifespan
+- [ ] Profile slow tests — `pytest --durations=10`
 
-### Tydzień 9-10: Frontend basics
+### Features
+- [ ] JWT auth + user model + protected endpointy
+- [ ] Endpoint `/teams/compare` — porównywanie konstruktorów
+- [ ] Endpoint `/season/{year}/highlights` — najciekawsze statystyki sezonu
+- [ ] Webhook dla powiadomień o nowym wyścigu
 
+### Frontend (oddzielny projekt)
 - [ ] Vue lub React tutorial
 - [ ] Prosty frontend konsumujący F1-Stats API
 - [ ] Deploy frontendu
 
-### Tydzień 11-13: Drugi projekt LUB pogłębienie F1-Stats
+### DevOps
+- [ ] Multi-stage Dockerfile (mniejszy image)
+- [ ] GitHub Actions matrix — testy na Python 3.11 i 3.12
+- [ ] Deploy automation — fly.io lub Railway
 
-- [ ] Decyzja: nowy mniejszy projekt czy F1-Stats v4
-- [ ] Realizacja wybranego kierunku
-- [ ] Deploy + dokumentacja + pin na GitHub
+### Observability
+- [ ] OpenTelemetry tracing
+- [ ] Prometheus metrics endpoint
+- [ ] Sentry error reporting
 
-### Tydzień 14: Interview prep intensywny
+---
 
-- [ ] Mock interview (Pramp)
-- [ ] Powtórka: Python, OOP, async, SQL, system design
-- [ ] Dopracowanie historii projektowych
+## Tech debt — znane problemy
 
-- [ ] Dzień 99: Refleksja — przegląd learning_notes.md
-- [ ] Dzień 100: GitHub "after" vs "before", podsumowanie, post LinkedIn/blog
+- [ ] DRY violation: `get_driver_standings` i `get_constructor_standings`. Plan: 06.07.
+- [ ] Brak Alembic migrations w produkcji — używam `create_all` w lifespan. Plan: backlog.
+- [ ] Brak testu edge case: rok bez sprintów. Plan: 02.07.
+- [ ] `leader` jako Union[DriverStandingInfo, Literal["draw"]] — refactor gdy będzie więcej consumers.
+- [ ] `asyncio.sleep(2)` w `fetch_session_with_semaphore` — zostaje, świadoma decyzja.
