@@ -1,6 +1,6 @@
 import asyncio
 import datetime
-from typing import cast, Literal
+from typing import Literal, cast
 
 import httpx
 from fastapi import HTTPException
@@ -440,7 +440,7 @@ def calculate_comparison(
     driver1_stats = (driver1.points, driver1.wins)
     driver2_stats = (driver2.points, driver2.wins)
 
-    leader: DriverStandingInfo | Literal["draw"] 
+    leader: DriverStandingInfo | Literal["draw"]
 
     if driver1_stats == driver2_stats:
         leader = "draw"
