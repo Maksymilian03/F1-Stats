@@ -1,10 +1,10 @@
 import asyncio
 import datetime
-from typing import cast
+from typing import cast, Literal
 
 import httpx
 from fastapi import HTTPException
-from sqlalchemy import delete, func, select, and_
+from sqlalchemy import and_, delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import ConstructorStanding, DriverStanding
@@ -440,6 +440,8 @@ def calculate_comparison(
     driver1_stats = (driver1.points, driver1.wins)
     driver2_stats = (driver2.points, driver2.wins)
 
+    leader: DriverStandingInfo | Literal["draw"] 
+
     if driver1_stats == driver2_stats:
         leader = "draw"
     elif driver1_stats > driver2_stats:
@@ -455,7 +457,12 @@ def calculate_comparison(
     )
 
 
-async def load_comparison_data_from_db(year: int, driver1_number: int, driver2_number: int, session: AsyncSession):
+async def load_comparison_data_from_db(
+    year: int,
+    driver1_number: int,
+    driver2_number: int,
+    session: AsyncSession
+    ):
     stmt = select(DriverStanding).where(
     and_(DriverStanding.year == year, DriverStanding.driver_number == driver1_number))
     result_driver1 = await session.execute(stmt)
@@ -468,17 +475,28 @@ async def load_comparison_data_from_db(year: int, driver1_number: int, driver2_n
     driver2_data = result_driver2.scalar()
 
     if driver1_data is None:
-        raise HTTPException(status_code=404, detail=f"Driver {driver1_number} not found in year {year}")
+        raise HTTPException(
+            status_code=404, detail=f"Driver {driver1_number} not found in year {year}")
     if driver2_data is None:
-        raise HTTPException(status_code=404, detail=f"Driver {driver2_number} not found in year {year}")
+        raise HTTPException(
+            status_code=404, detail=f"Driver {driver2_number} not found in year {year}")
 
     return driver1_data, driver2_data
 
 
 
-async def get_comparison_drivers(year: int, driver1_number: int, driver2_number: int, session: AsyncSession):
+async def get_comparison_drivers(
+    year: int,
+    driver1_number: int,
+    driver2_number: int,
+    session: AsyncSession
+    ):
     if driver1_number == driver2_number:
         raise HTTPException(status_code=400, detail="Driver numbers must be different")
     if await is_db_data_fresh(year, session):
-        driver1, driver2 = await load_comparison_data_from_db(year, driver1_number, driver2_number, session)
+        driver1, driver2 = await load_comparison_data_from_db(
+        year,
+        driver1_number,
+        driver2_number,
+        session)
         return calculate_comparison(driver1, driver2)
