@@ -55,8 +55,8 @@ Wracam do tego co zostało z Tygodnia 5.
 ### Tydzień 5 (29.06 – 05.07)
 
 - [x] 29.06 (pon): Logika `calculate_comparison` + `load_comparison_data_from_db` + `get_comparison_drivers` skomitowana
-- [ ] 30.06 (wt): Cache miss path w `get_comparison_drivers`
-- [ ] 01.07 (śr): Walidacja `driver_number` w Path + endpoint w `main.py`
+- [x] 30.06 (wt): Cache miss path w `get_comparison_drivers`
+- [x] 01.07 (śr): Walidacja `driver_number` w Path + endpoint w `main.py`
 - [ ] 02.07 (czw): Testy do `calculate_comparison` z parametrize
 - [ ] 03.07 (pt): Test integracyjny endpointu `/compare/`
 - [ ] 04.07 (sob): Update README — dokumentacja `/compare/`
