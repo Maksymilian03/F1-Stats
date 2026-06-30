@@ -484,19 +484,24 @@ async def load_comparison_data_from_db(
     return driver1_data, driver2_data
 
 
-
 async def get_comparison_drivers(
     year: int,
     driver1_number: int,
     driver2_number: int,
     session: AsyncSession
-    ):
+) -> Comparison:
     if driver1_number == driver2_number:
-        raise HTTPException(status_code=400, detail="Driver numbers must be different")
-    if await is_db_data_fresh(year, session):
-        driver1, driver2 = await load_comparison_data_from_db(
+        raise HTTPException(
+            status_code=400,
+            detail="Driver numbers must be different"
+        )
+
+    await get_driver_standings(year, session)
+
+    driver1, driver2 = await load_comparison_data_from_db(
         year,
         driver1_number,
         driver2_number,
-        session)
-        return calculate_comparison(driver1, driver2)
+        session
+    )
+    return calculate_comparison(driver1, driver2)
