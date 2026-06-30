@@ -8,7 +8,7 @@ from sqlalchemy import and_, delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from models import ConstructorStanding, DriverStanding
-from schemas import Comparison, DriverStandingInfo
+from schemas import CompareResponse, Comparison, DriverStandingInfo
 
 RACE_POINTS = {
     1: 25,
@@ -489,7 +489,7 @@ async def get_comparison_drivers(
     driver1_number: int,
     driver2_number: int,
     session: AsyncSession
-) -> Comparison:
+) -> CompareResponse:
     if driver1_number == driver2_number:
         raise HTTPException(
             status_code=400,
@@ -504,4 +504,10 @@ async def get_comparison_drivers(
         driver2_number,
         session
     )
-    return calculate_comparison(driver1, driver2)
+    comparison = calculate_comparison(driver1, driver2)
+
+    return CompareResponse(
+        driver1=driver1,
+        driver2=driver2,
+        comparison=comparison
+    )
