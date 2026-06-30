@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Driver(BaseModel):
@@ -40,6 +40,8 @@ class ConstructorEntry(BaseModel):
 
 
 class DriverStandingInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     position: int
     full_name: str
     driver_number: int
