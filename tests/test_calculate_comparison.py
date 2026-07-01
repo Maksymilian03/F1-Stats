@@ -1,5 +1,5 @@
-from services import calculate_comparison
 from schemas import DriverStandingInfo
+from services import calculate_comparison
 
 
 def test_calculate_comparison_result_driver1_wins():
