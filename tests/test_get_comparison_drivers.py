@@ -4,6 +4,8 @@ import pytest
 
 from schemas import CompareResponse, DriverStandingInfo
 from services import get_comparison_drivers
+from main import app
+from fastapi.testclient import TestClient
 
 
 @pytest.mark.asyncio
@@ -30,3 +32,17 @@ async def test_get_comparison_drivers(mock_get_driver_standings, mock_load_compa
     assert result.comparison.wins_difference == 2
     mock_get_driver_standings.assert_awaited_once_with(2024, mock_session)
     mock_load_comparison_data_from_db.assert_awaited_once_with(2024, 44, 3, mock_session)
+
+client = TestClient(app)
+async def test_get_comparison_raise_404_with_same_number_drivers():
+    # Arrange
+    year = 2023
+    driver1_number = 3
+    driver2_number = 3
+
+    # Act
+    response = client.get(f'/compare/{year}/{driver1_number}/{driver2_number}/')
+
+    # Assert
+    assert response.status_code == 400
+
