@@ -46,3 +46,14 @@ async def test_get_comparison_raise_404_with_same_number_drivers():
     # Assert
     assert response.status_code == 400
 
+
+async def test_get_comparison_raise_422_for_invalid_data():
+    # Arrange
+    year = 2023
+    driver1_number = 3
+
+    # Act
+    response = client.get(f'/compare/{year}/{driver1_number}/0')
+
+    # Assert
+    assert response.status_code == 422
