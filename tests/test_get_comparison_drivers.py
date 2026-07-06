@@ -34,7 +34,7 @@ async def test_get_comparison_drivers(mock_get_driver_standings, mock_load_compa
     mock_load_comparison_data_from_db.assert_awaited_once_with(2024, 44, 3, mock_session)
 
 client = TestClient(app)
-async def test_get_comparison_raise_404_with_same_number_drivers():
+def test_get_comparison_raise_400_with_same_number_drivers():
     # Arrange
     year = 2023
     driver1_number = 3
@@ -47,13 +47,26 @@ async def test_get_comparison_raise_404_with_same_number_drivers():
     assert response.status_code == 400
 
 
-async def test_get_comparison_raise_422_for_invalid_data():
+def test_get_comparison_raise_422_for_invalid_data():
     # Arrange
     year = 2023
     driver1_number = 3
 
     # Act
-    response = client.get(f'/compare/{year}/{driver1_number}/0')
+    response = client.get(f'/compare/{year}/{driver1_number}/0/')
+
+    # Assert
+    assert response.status_code == 422
+
+
+def test_get_comparison_raise_422_for_invalid_year():
+    # Arrange
+    year = 2022
+    driver1_number = 3
+    driver2_number = 44
+
+    # Act
+    response = client.get(f'/compare/{year}/{driver1_number}/{driver2_number}/')
 
     # Assert
     assert response.status_code == 422
