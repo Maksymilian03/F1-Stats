@@ -58,25 +58,24 @@ Wracam do tego co zostało z Tygodnia 5.
 - [x] 30.06 (wt): Cache miss path w `get_comparison_drivers`
 - [x] 01.07 (śr): Walidacja `driver_number` w Path + endpoint w `main.py`
 - [x] 02.07 (czw): Testy do `calculate_comparison` z parametrize
-- [ ] 03.07 (pt): Test integracyjny endpointu `/compare/`
-- [ ] 04.07 (sob): Update README — dokumentacja `/compare/`
-- [ ] 05.07 (niedz, LEKKO): Refleksja tygodnia + learning_notes.md
+- [ ] 14.07 (wt): Test integracyjny endpointu `/compare/`
+- [ ] 15.07 (śr): Update README — dokumentacja `/compare/`
+- [ ] 19.07 (niedz, LEKKO): Refleksja tygodnia + learning_notes.md
 
 ---
 
 ## Do zrobienia potem — to co miało być w Tygodniu 6
 
-### Tydzień 6 (06-12.07)
+### Tydzień 6 (16-22.07)
 
-- [ ] 06.07 (pon): Refactor DRY — wspólna funkcja dla `get_driver_standings` i `get_constructor_standings`
-- [ ] 07.07 (wt): Strukturalne logowanie (structlog)
-- [ ] 08.07 (śr): Middleware — request ID + timing
-- [ ] 09.07 (czw): Error handling middleware + custom exceptions
-- [ ] 10.07 (pt): Env vars — `pydantic-settings` + `.env.example`
-- [ ] 11.07 (sob): Redis w docker-compose + warstwa cache
-- [ ] 12.07 (niedz, LEKKO): Refleksja
+- [ ] 16.07 (czw): Refactor DRY — wspólna funkcja dla `get_driver_standings` i `get_constructor_standings`
+- [ ] 17.07 (pt): Strukturalne logowanie (structlog)
+- [ ] 18.07 (sob): Middleware — request ID + timing
+- [ ] 20.07 (pon): Error handling middleware + custom exceptions
+- [ ] 21.07 (wt): Env vars — `pydantic-settings` + `.env.example`
+- [ ] 22.07 (śr): Redis w docker-compose + warstwa cache
 
-### Tydzień 7 (13-19.07)
+### Tydzień 7 (23-31.07)
 
 - [ ] Rate limiting (slowapi)
 - [ ] CORS middleware
@@ -119,8 +118,8 @@ Wracam do tego co zostało z Tygodnia 5.
 
 ## Tech debt — znane problemy
 
-- [ ] DRY violation: `get_driver_standings` i `get_constructor_standings`. Plan: 06.07.
+- [ ] DRY violation: `get_driver_standings` i `get_constructor_standings`. Plan: 16.07.
 - [ ] Brak Alembic migrations w produkcji — używam `create_all` w lifespan. Plan: backlog.
-- [ ] Brak testu edge case: rok bez sprintów. Plan: 02.07.
+- [ ] Brak testu edge case: rok bez sprintów. Plan: 14.07.
 - [ ] `leader` jako Union[DriverStandingInfo, Literal["draw"]] — refactor gdy będzie więcej consumers.
 - [ ] `asyncio.sleep(2)` w `fetch_session_with_semaphore` — zostaje, świadoma decyzja.
