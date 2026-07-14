@@ -4,21 +4,19 @@ from fastapi.testclient import TestClient
 
 from main import app
 from schemas import DriverStandingInfo
-from database import get_db
-
 
 client = TestClient(app)
 
 @patch('services.load_comparison_data_from_db', new_callable=AsyncMock)
 @patch('services.get_driver_standings', new_callable=AsyncMock)
 def test_compare_endpoint_returns_200_with_full_response(mock_get_driver_standings, mock_load_comparison_data_from_db, override_get_db):
-    # Arrange 
-   
+    # Arrange
+
 
     mock_load_comparison_data_from_db.return_value = (
         DriverStandingInfo(position=1, full_name="Max Verstappen", driver_number=1, team="Red Bull", points=100, wins=3),
         DriverStandingInfo(position=2, full_name="Lando Norris", driver_number=4, team="McLaren", points=80, wins=2)
-    )  
+    )
 
     # Act
     response = client.get("/compare/2024/1/4/")
