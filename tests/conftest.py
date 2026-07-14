@@ -143,4 +143,11 @@ async def client(db_session):
     app.dependency_overrides.clear()
 
 
+@pytest.fixture
+def override_get_db():
+    app.dependency_overrides[get_db] = lambda: AsyncMock()
+    yield
+    app.dependency_overrides.clear()
+
+
 
