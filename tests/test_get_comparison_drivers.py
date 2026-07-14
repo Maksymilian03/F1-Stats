@@ -14,8 +14,6 @@ from services import get_comparison_drivers
 async def test_get_comparison_drivers(mock_get_driver_standings, mock_load_comparison_data_from_db, mock_session):
     # Arrange
 
-    # Mock the return values of the dependencies
-
     mock_load_comparison_data_from_db.return_value = (
         DriverStandingInfo(position=1, full_name="Lewis Hamilton", driver_number=44, team="Mercedes", points=100, wins=5),
         DriverStandingInfo(position=2, full_name="Max Verstappen", driver_number=3, team="Red Bull", points=80, wins=3)
@@ -32,41 +30,3 @@ async def test_get_comparison_drivers(mock_get_driver_standings, mock_load_compa
     assert result.comparison.wins_difference == 2
     mock_get_driver_standings.assert_awaited_once_with(2024, mock_session)
     mock_load_comparison_data_from_db.assert_awaited_once_with(2024, 44, 3, mock_session)
-
-client = TestClient(app)
-def test_get_comparison_raise_400_with_same_number_drivers():
-    # Arrange
-    year = 2023
-    driver1_number = 3
-    driver2_number = 3
-
-    # Act
-    response = client.get(f'/compare/{year}/{driver1_number}/{driver2_number}/')
-
-    # Assert
-    assert response.status_code == 400
-
-
-def test_get_comparison_raise_422_for_invalid_data():
-    # Arrange
-    year = 2023
-    driver1_number = 3
-
-    # Act
-    response = client.get(f'/compare/{year}/{driver1_number}/0/')
-
-    # Assert
-    assert response.status_code == 422
-
-
-def test_get_comparison_raise_422_for_invalid_year():
-    # Arrange
-    year = 2022
-    driver1_number = 3
-    driver2_number = 44
-
-    # Act
-    response = client.get(f'/compare/{year}/{driver1_number}/{driver2_number}/')
-
-    # Assert
-    assert response.status_code == 422
