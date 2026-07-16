@@ -1,12 +1,12 @@
 # F1-Stats
 
-Backend REST API zwracający aktualne klasyfikacje, wyniki wyścigów i informacje o kierowcach Formuły 1. Asynchroniczne pobieranie danych z OpenF1 API, cache w PostgreSQL, walidacja Pydantic oraz 40 testów (37 jednostkowych + 3 integracyjne).
+Backend REST API zwracający aktualne klasyfikacje, wyniki wyścigów i informacje o kierowcach Formuły 1. Asynchroniczne pobieranie danych z OpenF1 API, cache w PostgreSQL, walidacja Pydantic oraz 49 testów (42 jednostkowych + 7 integracyjnych).
 
 ![Python](https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.136-009688?logo=fastapi&logoColor=white)
 ![Pydantic](https://img.shields.io/badge/Pydantic-2.13-E92063?logo=pydantic&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791?logo=postgresql&logoColor=white)
-![Pytest](https://img.shields.io/badge/Tests-40%20passed-brightgreen?logo=pytest&logoColor=white)
+![Pytest](https://img.shields.io/badge/Tests-49%20passed-brightgreen?logo=pytest&logoColor=white)
 ![CI](https://github.com/Maksymilian03/F1-Stats/actions/workflows/ci.yml/badge.svg)
 ![Ruff](https://img.shields.io/badge/Linting-ruff-261230?logo=ruff)
 ![Mypy](https://img.shields.io/badge/Type%20check-mypy-2A6DB2)
@@ -28,16 +28,16 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - Równoległe zapytania (asyncio.gather) z limitowaniem
 - Walidacja danych przez Pydantic
 - Cache w PostgreSQL z 3-poziomową logiką świeżości (no data / historical / current z TTL)
-- 37 testów jednostkowych + 3 testy integracyjne (TestClient + PostgreSQL w Dockerze)
+- 42 testy jednostkowe + 7 testów integracyjnych (TestClient + PostgreSQL w Dockerze)
 - Mockowanie async (AsyncMock, side_effect, patch)
 - Podział na warstwy (main / schemas / services / database)
 - Konteneryzacja aplikacji (Docker + docker-compose)
 - CI/CD (GitHub Actions — pytest, ruff, mypy)
 - Migracja z file-based cache do PostgreSQL
 - SQLAlchemy 2.0 z Mapped typed annotations
+- Porównywarka kierowców (endpoint /compare/)
 
 ### W trakcie
-- Porównywarka kierowców (endpoint /compare/)
 - Refactor wspólnej logiki get_driver_standings i get_constructor_standings (DRY)
 
 ### Planowane
@@ -73,7 +73,7 @@ Interaktywna dokumentacja (Swagger UI): [https://f1-stats-g283.onrender.com/docs
 - Rate limiting (Semaphore + sleep)
 - Obsługa błędów HTTP (404 / 502 / 503) z fail-soft na pojedynczych rekordach
 - Walidacja parametrów (Pydantic + Path z ge/le)
-- 40 testów (pytest fixtures w conftest.py, AsyncMock, side_effect, TestClient dla integration)
+- 49 testów (pytest fixtures w conftest.py, AsyncMock, side_effect, TestClient dla integration)
 - Clean architecture (separacja services/routers/schemas/database)
 
 ## Instalacja
@@ -129,6 +129,7 @@ Aplikacja będzie dostępna pod `http://localhost:8000`.
 | GET | /results/{year}/{country}/ | Wyniki konkretnego wyścigu |
 | GET | /standings/{year}/ | Klasyfikacja kierowców |
 | GET | /standings/constructors/{year}/ | Klasyfikacja konstruktorów |
+| GET | /compare/{year}/{driver1_number}/{driver2_number}/ | Porównanie wyników 2 kierowców za dany sezon |
 
 Parametr `year` przyjmuje wartości od 2023 do bieżącego roku.
 
@@ -155,6 +156,49 @@ Parametr `year` przyjmuje wartości od 2023 do bieżącego roku.
 ]
 ```
 
+### Przykład odpowiedzi: GET /compare/2023/1/44/
+
+Porównanie Verstappena (numer 1) i Hamiltona (numer 44) w sezonie 2023.
+
+```json
+{
+  "driver1": {
+    "position": 1,
+    "full_name": "Max VERSTAPPEN",
+    "driver_number": 1,
+    "team": "Red Bull Racing",
+    "points": 566,
+    "wins": 19
+  },
+  "driver2": {
+    "position": 3,
+    "full_name": "Lewis HAMILTON",
+    "driver_number": 44,
+    "team": "Mercedes",
+    "points": 230,
+    "wins": 0
+  },
+  "comparison": {
+    "points_difference": 336,
+    "wins_difference": 19,
+    "position_difference": 2,
+    "leader": {
+      "position": 1,
+      "full_name": "Max VERSTAPPEN",
+      "driver_number": 1,
+      "team": "Red Bull Racing",
+      "points": 566,
+      "wins": 19
+    }
+  }
+}
+```
+
+Endpoint zwraca też błędy:
+- **400** — gdy `driver1_number == driver2_number`
+- **404** — gdy któryś z kierowców nie startował w danym sezonie
+- **422** — gdy `year < 2023` lub `driver_number` poza zakresem 1-99
+
 ## Architektura
 
 Aplikacja jest podzielona na warstwy:
@@ -164,7 +208,7 @@ Aplikacja jest podzielona na warstwy:
 - `schemas.py` — Modele Pydantic (response_model)
 - `database.py` — SQLAlchemy async session, engine, get_db
 - `models.py` — Modele ORM (DriverStanding, ConstructorStanding)
-- `tests/` — 40 testów:
+- `tests/` — 49 testów:
   - logika obliczeń: calculate_points, aggregate_points_by_team, leaderboard, merge_driver_details
   - integracja z OpenF1 (mock async): fetch_drivers, fetch_session_results, get_races_and_sprints
   - endpoint orchestracji: get_driver_standings (happy path + cache hit + cache miss)
@@ -190,7 +234,7 @@ Aplikacja jest podzielona na warstwy:
 Testy jednostkowe (bez bazy):
 
 ```bash
-pytest tests/unit/ -v
+pytest tests/ -v
 ```
 
 Testy integracyjne (wymagają PostgreSQL w Dockerze):
