@@ -261,7 +261,7 @@ async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
     if await is_db_data_fresh(year, session):
         return await load_standings_from_db(year, session)
 
-    standings_result = await calculate_standings(year)
+    standings_result = await prepare_standings_data(year)
     if not standings_result:
         return []
     else:
@@ -285,7 +285,7 @@ async def get_constructor_standings(year: int, session: AsyncSession) -> list[di
     if await is_constructor_db_data_fresh(year, session):
         return await load_constructor_standings_from_db(year, session)
 
-    standings_result = await calculate_standings(year)
+    standings_result = await prepare_standings_data(year)
     if not standings_result:
         return []
     else:
