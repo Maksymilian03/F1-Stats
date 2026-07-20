@@ -58,8 +58,8 @@ Wracam do tego co zostało z Tygodnia 5.
 - [x] 30.06 (wt): Cache miss path w `get_comparison_drivers`
 - [x] 01.07 (śr): Walidacja `driver_number` w Path + endpoint w `main.py`
 - [x] 02.07 (czw): Testy do `calculate_comparison` z parametrize
-- [ ] 14.07 (wt): Test integracyjny endpointu `/compare/`
-- [ ] 15.07 (śr): Update README — dokumentacja `/compare/`
+- [x] 14.07 (wt): Test integracyjny endpointu `/compare/`
+- [x] 15.07 (śr): Update README — dokumentacja `/compare/`
 - [ ] 19.07 (niedz, LEKKO): Refleksja tygodnia + learning_notes.md
 
 ---
@@ -68,7 +68,7 @@ Wracam do tego co zostało z Tygodnia 5.
 
 ### Tydzień 6 (16-22.07)
 
-- [ ] 16.07 (czw): Refactor DRY — wspólna funkcja dla `get_driver_standings` i `get_constructor_standings`
+- [x] 16.07 (czw): Refactor DRY — wspólna funkcja dla `get_driver_standings` i `get_constructor_standings`
 - [ ] 17.07 (pt): Strukturalne logowanie (structlog)
 - [ ] 18.07 (sob): Middleware — request ID + timing
 - [ ] 20.07 (pon): Error handling middleware + custom exceptions
