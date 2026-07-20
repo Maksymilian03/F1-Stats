@@ -221,21 +221,14 @@ async def fetch_session_with_semaphore(
         await asyncio.sleep(2)  # Dodajemy małe opóźnienie, aby rozłożyć żądania w czasie
         return await fetch_session_results(session_key)
 
-async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
-    """
-    Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
-    """
-    # Odczyt z db
-    if await is_db_data_fresh(year, session):
-        return await load_standings_from_db(year, session)
 
-
+async def prepare_standings_data(year: int) -> tuple[dict, dict] | None:
     race_keys, sprint_keys = await get_races_and_sprints(year)
 
     semaphore = asyncio.Semaphore(1)
 
     if not race_keys:
-        return []
+        return None
 
     race_results, sprint_results, list_of_drivers = await asyncio.gather(
         asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
@@ -256,6 +249,23 @@ async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
             'points': race_stats['points'] + sprint_stats['points'],
             'wins': race_stats['wins'] + sprint_stats['wins']
         }
+
+    return (list_of_drivers, combined)
+
+
+async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
+    """
+    Funkcja wywoła wszytskie potrzbne funkcje zeby zwrocic klasyfikacje w danym sezonie
+    """
+    # Odczyt z db
+    if await is_db_data_fresh(year, session):
+        return await load_standings_from_db(year, session)
+
+    standings_result = await calculate_standings(year)
+    if not standings_result:
+        return []
+    else:
+        list_of_drivers, combined = standings_result
 
     drivers_with_points = merge_driver_details(list_of_drivers, combined)
 
@@ -267,7 +277,6 @@ async def get_driver_standings(year: int, session: AsyncSession) -> list[dict]:
     return result
 
 
-
 async def get_constructor_standings(year: int, session: AsyncSession) -> list[dict]:
     """
     Funkcja zwroci klasyfikacje konstruktorów w danym sezonie
@@ -276,33 +285,11 @@ async def get_constructor_standings(year: int, session: AsyncSession) -> list[di
     if await is_constructor_db_data_fresh(year, session):
         return await load_constructor_standings_from_db(year, session)
 
-
-    race_keys, sprint_keys = await get_races_and_sprints(year)
-
-    semaphore = asyncio.Semaphore(1)
-
-    if not race_keys:
+    standings_result = await calculate_standings(year)
+    if not standings_result:
         return []
-
-    race_results, sprint_results, list_of_drivers = await asyncio.gather(
-        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in race_keys]),
-        asyncio.gather(*[fetch_session_with_semaphore(semaphore, key) for key in sprint_keys]),
-        fetch_drivers(session_key=race_keys[-1])
-    )
-
-    race_points = calculate_points(race_results, RACE_POINTS, count_wins=True)
-    sprint_points = calculate_points(sprint_results, SPRINT_POINTS, count_wins=False)
-
-
-    combined = {}
-    all_drivers = set(race_points.keys()).union(sprint_points.keys())
-    for driver_number in all_drivers:
-        race_stats = race_points.get(driver_number, {'points': 0, 'wins': 0})
-        sprint_stats = sprint_points.get(driver_number, {'points': 0, 'wins': 0})
-        combined[driver_number] = {
-            'points': race_stats['points'] + sprint_stats['points'],
-            'wins': race_stats['wins'] + sprint_stats['wins']
-        }
+    else:
+        list_of_drivers, combined = standings_result
 
     teams = aggregate_points_by_team(combined, list_of_drivers)
 

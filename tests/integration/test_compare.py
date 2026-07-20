@@ -12,7 +12,6 @@ client = TestClient(app)
 def test_compare_endpoint_returns_200_with_full_response(mock_get_driver_standings, mock_load_comparison_data_from_db, override_get_db):
     # Arrange
 
-
     mock_load_comparison_data_from_db.return_value = (
         DriverStandingInfo(position=1, full_name="Max Verstappen", driver_number=1, team="Red Bull", points=100, wins=3),
         DriverStandingInfo(position=2, full_name="Lando Norris", driver_number=4, team="McLaren", points=80, wins=2)

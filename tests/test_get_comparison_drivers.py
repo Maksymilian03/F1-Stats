@@ -12,6 +12,8 @@ from services import get_comparison_drivers
 async def test_get_comparison_drivers(mock_get_driver_standings, mock_load_comparison_data_from_db, mock_session):
     # Arrange
 
+    # Mock the return values of the dependencies
+
     mock_load_comparison_data_from_db.return_value = (
         DriverStandingInfo(position=1, full_name="Lewis Hamilton", driver_number=44, team="Mercedes", points=100, wins=5),
         DriverStandingInfo(position=2, full_name="Max Verstappen", driver_number=3, team="Red Bull", points=80, wins=3)
